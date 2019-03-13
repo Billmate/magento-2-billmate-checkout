@@ -42,6 +42,11 @@ class Content extends \Magento\Checkout\Block\Onepage
      */
     protected $configurationPool;
 
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
 
     /**
      * Cart constructor.
@@ -81,6 +86,11 @@ class Content extends \Magento\Checkout\Block\Onepage
         $this->_taxHelper = $taxHelper;
         $this->_productConfig = $productConfig;
         $this->configurationPool = $configurationPool;
+
+        //ugly hack to remove compilation errors in Magento 2.1.x
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        //end of hack
 	}
 
     /**
@@ -89,6 +99,10 @@ class Content extends \Magento\Checkout\Block\Onepage
 	public function getItems()
     {
         return $this->helper->getItems();
+    }
+
+    public function getScopeConfig(){
+	    return $this->scopeConfig;
     }
 
     /**
