@@ -53,9 +53,11 @@
 					<label>Credentials</label>
 					<field id="billmate_id" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
 						<label>ID</label>
+						<comment><![CDATA[Go to your <a  target="_blank" href="https://online.billmate.se/installningar/?cmd=plugins#show:loginexternal_settings" >Billmate account</a>.Open Settings -> Integration -> Open Tab API Tasks and copy Billmate Id (Id) here.]]></comment>
 					</field>
 					<field id="billmate_key" translate="label" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
 						<label>Secret</label>
+						<comment><![CDATA[Go to your <a  target="_blank" href="https://online.billmate.se/installningar/?cmd=plugins#show:loginexternal_settings" >Billmate account</a>.Open Settings -> Integration -> Open Tab API Tasks and copy Billmate Key (Secret) here.]]></comment>
 					</field>
 				</group>
 			</group>
