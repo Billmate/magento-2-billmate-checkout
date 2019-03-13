@@ -8,7 +8,7 @@
 			<group id="billmate_checkout" translate="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
 				<label>Billmate Checkout</label>
 				<fieldset_css>complex billmate-section</fieldset_css>
-				<frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
+				<frontend_model>Billmate\BillmateCheckout\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
 				<group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
 					<label>General</label>
 					<field id="plugin_version" translate="label comment" type="label" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
