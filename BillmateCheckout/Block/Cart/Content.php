@@ -43,6 +43,11 @@ class Content extends \Magento\Checkout\Block\Onepage
     protected $configurationPool;
 
     /**
+     * @var \Magento\Tax\Model\Config
+     */
+    protected $_taxConfig;
+
+    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
@@ -74,6 +79,7 @@ class Content extends \Magento\Checkout\Block\Onepage
         \Magento\Tax\Helper\Data $taxHelper,
         \Magento\Catalog\Helper\Product\Configuration $productConfig,
         \Magento\Catalog\Helper\Product\ConfigurationPool $configurationPool,
+        \Magento\Tax\Model\Config $taxConfig,
         array $layoutProcessors = [],
         array $data = []
 	) {
@@ -86,6 +92,7 @@ class Content extends \Magento\Checkout\Block\Onepage
         $this->_taxHelper = $taxHelper;
         $this->_productConfig = $productConfig;
         $this->configurationPool = $configurationPool;
+        $this->_taxConfig = $taxConfig;
 
         //ugly hack to remove compilation errors in Magento 2.1.x
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -261,8 +268,27 @@ class Content extends \Magento\Checkout\Block\Onepage
      */
     public function getShippingValue()
     {
-        return $this->helper->getQuote()
-            ->getShippingAddress()
-            ->getShippingInclTax();
+        $shipping = $this->helper->getQuote()
+            ->getShippingAddress();
+        if ($this->displayShippingIncludeTax()) {
+            return $shipping->getShippingInclTax();
+        }
+        return $shipping->getShippingAmount();
+    }
+
+    /**
+     * @return bool
+     */
+    public function displayShippingIncludeTax()
+    {
+        return $this->_taxConfig->displayCartShippingInclTax();
+    }
+
+    /**
+     * @return bool
+     */
+    public function displayPricesIncludeTax()
+    {
+        return $this->_taxConfig->displayCartPricesInclTax();
     }
 }
