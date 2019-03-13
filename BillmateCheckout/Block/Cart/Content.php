@@ -48,12 +48,6 @@ class Content extends \Magento\Checkout\Block\Onepage
     protected $_taxConfig;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
-
-    /**
      * Cart constructor.
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
@@ -93,11 +87,6 @@ class Content extends \Magento\Checkout\Block\Onepage
         $this->_productConfig = $productConfig;
         $this->configurationPool = $configurationPool;
         $this->_taxConfig = $taxConfig;
-
-        //ugly hack to remove compilation errors in Magento 2.1.x
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-        //end of hack
 	}
 
     /**
@@ -106,10 +95,6 @@ class Content extends \Magento\Checkout\Block\Onepage
 	public function getItems()
     {
         return $this->helper->getItems();
-    }
-
-    public function getScopeConfig(){
-	    return $this->scopeConfig;
     }
 
     /**
@@ -256,6 +241,9 @@ class Content extends \Magento\Checkout\Block\Onepage
             ->getData('grand_total');
     }
 
+    /**
+     * @return float
+     */
     public function getTaxValue()
     {
         $shippingAddressTotal = $this->helper->getQuote()
