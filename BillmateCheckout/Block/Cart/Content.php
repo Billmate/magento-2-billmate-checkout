@@ -114,9 +114,14 @@ class Content extends \Magento\Checkout\Block\Onepage
      */
     public function getShippingPrice($price)
     {
+        $includedTax = true;
+        if ($this->_taxHelper->displayShippingPriceIncludingTax()) {
+            $includedTax = null;
+        }
+
         return $this->_taxHelper->getShippingPrice(
             $price,
-            $this->_taxHelper->displayShippingPriceIncludingTax()
+            $includedTax
         );
     }
 
