@@ -5,6 +5,7 @@ namespace Billmate\BillmateCheckout\Helper;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Billmate\BillmateCheckout\Model\Payment\BillmateCheckout;
+use Magento\Quote\Model\ShippingMethodManagement;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -93,7 +94,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\View\LayoutFactory $layoutFactory,
         ProductMetadataInterface $metaData,
         \Magento\Quote\Model\Quote\TotalsCollector $totalsCollector,
-        ModuleListInterface $moduleList
+        ShippingMethodManagement $shippingManager,
+        ModuleListInterface $moduleList,
+        \Magento\Quote\Model\Cart\ShippingMethodConverter $converter
 	){
         $this->orderInterface = $order;
         $this->shippingRate = $shippingRate;
@@ -103,7 +106,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->metaData = $metaData;
         $this->layoutFactory = $layoutFactory;
         $this->totalsCollector = $totalsCollector;
+        $this->shippingManager = $shippingManager;
         $this->_moduleList = $moduleList;
+        $this->converter = $converter;
 
         parent::__construct($context);
     }
@@ -342,11 +347,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $quote = $this->getQuote();
         $shippingAddress = $this->getQuote()->getShippingAddress();
         $shippingAddress->setCollectShippingRates(true);
-
         $this->totalsCollector->collectAddressTotals($quote, $shippingAddress);
         $shippingRates = $shippingAddress->getGroupedAllShippingRates();
         foreach ($shippingRates as $carrierRates) {
             foreach ($carrierRates as $rate) {
+                $convertedRate = $this->converter->modelToDataObject($rate, $quote->getQuoteCurrencyCode());
+                $rate->setPriceInclTax($convertedRate->getPriceInclTax());
+                $rate->setPriceExclTax($convertedRate->getPriceExclTax());
                 $methods[] = $rate;
             }
         }

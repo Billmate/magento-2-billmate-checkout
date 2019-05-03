@@ -114,8 +114,12 @@
                 <input type="radio" class="radio" id="<?= $rate->getCode() ?>"
                        name="method" value="<?= $rate->getCode() ?>"
                     <?php if($block->isActiveMethod($rate->getCode())):?> checked <?php endif ?> >
-                <label for="<?= $rate->getCode() ?>" class="radio_lable" ><?= $rate->getMethodTitle() ?>
-                    <?= $block->formatPrice($block->getShippingPrice($rate->getPrice())) ?>
+                <label for="<?= $rate->getCode() ?>" class="radio_lable" ><?= $rate->getCarrierTitle() ?>
+                    <?php if ($block->displayTaxIncluded()) : ?>
+                        <?= $block->formatPrice($rate->getPriceInclTax()) ?>
+                    <?php else: ?>
+                        <?= $block->formatPrice($rate->getPriceExclTax()) ?>
+                    <?php endif; ?>
                 </label>
             <?php endforeach; ?>
         </div>
