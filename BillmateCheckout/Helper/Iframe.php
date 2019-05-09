@@ -185,6 +185,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         $response = $this->getIframeData();
 
         if(isset($response['url'])) {
+            $this->dataHelper->setSessionData('iframe_url', $response['url']);
             return $response['url'];
         }
         return '';

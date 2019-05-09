@@ -82,10 +82,10 @@ class BillmateAjax extends \Magento\Framework\App\Action\Action
                 $this->removeItem($itemId);
 			}
 
-            if (!$this->helper->getQuote()->getItemsQty()) {
+            if (!$this->helper->getQuote()->hasItems()) {
 			    $errorData = [
 			        'error' => true,
-                    'redirect_url' => $this->_url->getUrl( 'billmatecheckout/success/error')
+                    'redirect_url' => $this->_url->getUrl( 'billmatecheckout')
                 ];
                 return $result->setData($errorData);
             }

@@ -250,6 +250,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 	public function clearBmSession()
     {
+        $this->setSessionData('iframe_url', null);
         $this->setSessionData('shippingPrice', null);
         $this->setSessionData('shipping_code', null);
         $this->setSessionData('billmate_shipping_tax', null);
