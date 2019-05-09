@@ -4,15 +4,15 @@ namespace Billmate\BillmateCheckout\Helper;
 
 class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const XML_PATH_GENERAL_ENABLE = 'payment/billmate_checkout/general/enable';
-    const XML_PATH_GENERAL_PUSHORDEREVENTS = 'payment/billmate_checkout/general/pushorderevents';
-    const XML_PATH_GENERAL_BTN = 'payment/billmate_checkout/general/inc_dec_btns';
-    const XML_PATH_GENERAL_ATTRIBUTES = 'payment/billmate_checkout/general/show_attributes_cart';
-    const XML_PATH_GENERAL_TERMS_URL = 'payment/billmate_checkout/general/terms_url';
-    const XML_PATH_GENERAL_PP_URL = 'payment/billmate_checkout/general/privacy_policy_url';
-    const XML_PATH_CREDENTIALS_ID = 'payment/billmate_checkout/credentials/billmate_id';
-    const XML_PATH_CREDENTIALS_KEY = 'payment/billmate_checkout/credentials/billmate_key';
-    const XML_PATH_GENERAL_TESTMODE = 'payment/billmate_checkout/general/testmode';
+    const XML_PATH_GENERAL_ENABLE = 'payment/billmate_checkout/billmate_configs/general/enable';
+    const XML_PATH_GENERAL_PUSHORDEREVENTS = 'payment/billmate_checkout/billmate_configs/general/pushorderevents';
+    const XML_PATH_GENERAL_BTN = 'payment/billmate_checkout/billmate_configs/general/inc_dec_btns';
+    const XML_PATH_GENERAL_ATTRIBUTES = 'payment/billmate_checkout/billmate_configs/general/show_attributes_cart';
+    const XML_PATH_GENERAL_TERMS_URL = 'payment/billmate_checkout/billmate_configs/general/terms_url';
+    const XML_PATH_GENERAL_PP_URL = 'payment/billmate_checkout/billmate_configs/general/privacy_policy_url';
+    const XML_PATH_CREDENTIALS_ID = 'payment/billmate_checkout/billmate_configs/credentials/billmate_id';
+    const XML_PATH_CREDENTIALS_KEY = 'payment/billmate_checkout/billmate_configs/credentials/billmate_key';
+    const XML_PATH_GENERAL_TESTMODE = 'payment/billmate_checkout/billmate_configs/general/testmode';
 
     /**
      * @param $config_path
