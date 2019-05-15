@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<head>
+		<css src="Billmate_BillmateCheckout/css/success.css" />
+	</head>
+    <body>
+		<referenceContainer name="content">
+			<block after="-" class="Billmate\BillmateCheckout\Block\Success"
+				   name="bm.chekcout.success"
+				   template="Billmate_BillmateCheckout::checkout/success.phtml"/>
+		</referenceContainer>
+    </body>
+</page>

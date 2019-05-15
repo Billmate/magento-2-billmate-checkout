@@ -31,8 +31,19 @@ class Success extends \Magento\Framework\View\Element\Template
         $this->registry = $registry;
 	}
 
+    /**
+     * @return int
+     */
 	public function getLastOrderIncId()
     {
         return $this->registry->registry('bm-inc-id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getSucessUrl()
+    {
+        return $this->helper->getSessionData('iframe_url');
     }
 }

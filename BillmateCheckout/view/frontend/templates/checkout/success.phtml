@@ -1,0 +1,18 @@
+<?php
+/**
+ * Shopping cart content template
+ *
+ * @var $block \Billmate\BillmateCheckout\Block\Success
+ */
+?>
+
+
+<?php $successUrl = $block->getSucessUrl() ?>
+<?php if ($successUrl): ?>
+    <div id="billmate-success">
+        <iframe id="checkout" src="<?= $successUrl ?> "
+                scrolling="no"
+                sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms allow-top-navigation">
+        </iframe>
+    </div>
+<?php endif; ?>

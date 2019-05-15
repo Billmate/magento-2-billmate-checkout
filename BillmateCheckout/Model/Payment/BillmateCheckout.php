@@ -56,6 +56,11 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
     protected $helper;
 
     /**
+     * @var \Billmate\BillmateCheckout\Helper\Config
+     */
+    protected $configHelper;
+
+    /**
      * @var Billmate
      */
     protected $billmateProvider;
@@ -89,12 +94,14 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Billmate\BillmateCheckout\Helper\Data $_helper,
+        \Billmate\BillmateCheckout\Helper\Config $configHelper,
         \Billmate\BillmateCheckout\Model\Api\Billmate $billmateProvider,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->helper = $_helper;
+        $this->configHelper = $configHelper;
         $this->billmateProvider = $billmateProvider;
         parent::__construct(
             $context,
@@ -118,6 +125,9 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        if (!$this->isAllowedToCallback()) {
+            return $this;
+        }
         $billmateConnection = $this->getBillMateProvider();
 
         $order = $payment->getOrder();
@@ -139,6 +149,10 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
      */
     public function void(\Magento\Payment\Model\InfoInterface $payment)
     {
+        if (!$this->isAllowedToCallback()) {
+            return $this;
+        }
+
         $billmateConnection = $this->getBillMateProvider();
 
         $order = $payment->getOrder();
@@ -155,6 +169,9 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
      */
     public function cancel(\Magento\Payment\Model\InfoInterface $payment)
     {
+        if (!$this->isAllowedToCallback()) {
+            return $this;
+        }
         $billmateConnection = $this->getBillMateProvider();
 
         $order = $payment->getOrder();
@@ -171,6 +188,9 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        if (!$this->isAllowedToCallback()) {
+            return $this;
+        }
         $billmateConnection = $this->getBillMateProvider();
 
         $order = $payment->getOrder();
@@ -207,5 +227,13 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
     protected function getBillMateProvider()
     {
         return $this->billmateProvider;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isAllowedToCallback()
+    {
+        return $this->configHelper->getPushEvents();
     }
 }

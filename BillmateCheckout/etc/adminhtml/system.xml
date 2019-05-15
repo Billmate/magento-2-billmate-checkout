@@ -7,56 +7,60 @@
 		<section id="payment">
 			<group id="billmate_checkout" translate="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
 				<label>Billmate Checkout</label>
-				<fieldset_css>complex billmate-section</fieldset_css>
-				<frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
-				<group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-					<label>General</label>
-					<field id="plugin_version" translate="label comment" type="label" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Plugin Version</label>
-						<frontend_model>Billmate\BillmateCheckout\Block\System\Config\Version</frontend_model>
-					</field>
-					<field id="enable" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Enabled</label>
-						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-						<comment>Enable/Disable Billmate Checkout</comment>
-					</field>
-					<field id="testmode" translate="label comment" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Test Mode Enabled</label>
-						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-						<comment>Enable/Disable Billmate Test Mode</comment>
-					</field>
-					<field id="pushorderevents" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Push order events to Billmate</label>
-						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-						<comment>Push order events, credit, cancel and activate to Billmate.</comment>
-					</field>
-					<field id="inc_dec_btns" translate="label comment" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Show Increase/Decrease buttons in cart</label>
-						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-						<comment>Activate if you want to show increase and decrease buttons in checkout</comment>
-					</field>
-					<field id="show_attributes_cart" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Show attributes in cart</label>
-						<comment><![CDATA[Show attributes such as size & color.]]></comment>
-						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-					</field>
-					<field id="terms_url" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Store Terms</label>
-						<comment>Put here full URL to terms and conditions</comment>
-					</field>
-					<field id="privacy_policy_url" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Privacy Policy</label>
-						<comment>Put here full URL to privacy policy (ex: https://youdomain.com/privacy-policy-url)</comment>
-					</field>
-				</group>
-				<group id="credentials" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Credentials</label>
-					<field id="billmate_id" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>ID</label>
-					</field>
-					<field id="billmate_key" translate="label" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Secret</label>
-					</field>
+				<group id="billmate_configs" translate="label" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+					<fieldset_css>complex billmate-section</fieldset_css>
+					<frontend_model>Billmate\BillmateCheckout\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
+					<group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+						<label>General</label>
+						<field id="plugin_version" translate="label comment" type="label" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Plugin Version</label>
+							<frontend_model>Billmate\BillmateCheckout\Block\System\Config\Version</frontend_model>
+						</field>
+						<field id="enable" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Enabled</label>
+							<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+							<comment>Enable/Disable Billmate Checkout</comment>
+						</field>
+						<field id="testmode" translate="label comment" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Test Mode Enabled</label>
+							<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+							<comment>Enable/Disable Billmate Test Mode</comment>
+						</field>
+						<field id="pushorderevents" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Push order events to Billmate</label>
+							<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+							<comment>Push order events, credit, cancel and activate to Billmate.</comment>
+						</field>
+						<field id="inc_dec_btns" translate="label comment" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Show Increase/Decrease buttons in cart</label>
+							<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+							<comment>Activate if you want to show increase and decrease buttons in checkout</comment>
+						</field>
+						<field id="show_attributes_cart" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Show attributes in cart</label>
+							<comment><![CDATA[Show attributes such as size & color.]]></comment>
+							<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+						</field>
+						<field id="terms_url" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Store Terms</label>
+							<comment>Put here full URL to terms and conditions</comment>
+						</field>
+						<field id="privacy_policy_url" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Privacy Policy</label>
+							<comment>Put here full URL to privacy policy (ex: https://youdomain.com/privacy-policy-url)</comment>
+						</field>
+					</group>
+					<group id="credentials" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+						<label>Credentials</label>
+						<field id="billmate_id" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>ID</label>
+							<comment><![CDATA[Go to your <a  target="_blank" href="https://online.billmate.se/installningar/?cmd=plugins#show:loginexternal_settings" >Billmate account</a>.Open Settings -> Integration -> Open Tab API Tasks and copy Billmate Id (Id) here.]]></comment>
+						</field>
+						<field id="billmate_key" translate="label" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+							<label>Secret</label>
+							<comment><![CDATA[Go to your <a  target="_blank" href="https://online.billmate.se/installningar/?cmd=plugins#show:loginexternal_settings" >Billmate account</a>.Open Settings -> Integration -> Open Tab API Tasks and copy Billmate Key (Secret) here.]]></comment>
+						</field>
+					</group>
 				</group>
 			</group>
 		</section>
