@@ -85,7 +85,9 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
 				$orderData = array(
 					'email' => $this->helper->getSessionData('billmate_email'),
 					'shipping_address' => $this->helper->getSessionData('billmate_billing_address'),
-                    'payment_method_name' => $paymentInfo['PaymentData']['method_name']
+                    'payment_method_name' => $paymentInfo['PaymentData']['method_name'],
+                    'payment_method_bm_code' => $paymentInfo['PaymentData']['method'],
+                    'payment_bm_status' => $requestData['data']['status'],
 				);
 				$orderId = $this->orderModel->setOrderData($orderData)->create();
                 if (!$orderId) {
@@ -94,8 +96,9 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
                     );
                 }
 
-                $this->helper->setSessionData('bm_order_id', $orderId);
+                $this->orderModel->checkOnHoldProcess($orderId);
 
+                $this->helper->setSessionData('bm_order_id', $orderId);
 			}
 
 			$order = $this->helper->getOrderByIncrementId($this->helper->getSessionData('bm-inc-id'));

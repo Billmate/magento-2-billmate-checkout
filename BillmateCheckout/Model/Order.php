@@ -11,6 +11,24 @@ class Order
     protected $orderData;
 
     /**
+     * @var OrderManagementInterface
+     */
+    protected $orderManagement;
+
+    /**
+     * @var array
+     */
+    protected $methodsToHoldChecking = [
+        'invoice' => 1,
+        'part_invoice' => 4
+    ];
+
+    /**
+     * @var string
+     */
+    protected $bmHoldStatus = 'Pending';
+
+    /**
      * Order constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
@@ -32,6 +50,7 @@ class Order
         \Magento\Quote\Model\Quote\Address\Rate $shippingRate,
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
+        \Magento\Sales\Api\OrderManagementInterface $orderManagement,
         \Billmate\BillmateCheckout\Helper\Data $dataHelper
     ){
         $this->_storeManager = $storeManager;
@@ -42,6 +61,7 @@ class Order
         $this->shippingRate = $shippingRate;
         $this->orderSender = $orderSender;
         $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->orderManagement = $orderManagement;
         $this->dataHelper = $dataHelper;
     }
 
@@ -79,7 +99,7 @@ class Order
 
             $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
 
-            $orderState = \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT;
+            $orderState = $this->getOrderState();
             $order->setState($orderState)->setStatus($orderState);
             $order->save();
 
@@ -218,6 +238,37 @@ class Order
     }
 
     /**
+     * @return string
+     */
+    protected function getOrderState()
+    {
+        return \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT;
+    }
+
+    public function checkOnHoldProcess($orderId)
+    {
+        if ($this->isReadyToHold()) {
+            $this->orderManagement->hold($orderId);
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isReadyToHold()
+    {
+        $orderData = $this->getOrderData();
+        if(
+            in_array($orderData['payment_method_bm_code'], $this->getMethodsToHoldChecking()) &&
+            $orderData['payment_bm_status'] == $this->getBmHoldStatus()
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @param $orderData
      *
      * @return $this
@@ -236,5 +287,21 @@ class Order
     public function getOrderData()
     {
         return $this->orderData;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMethodsToHoldChecking()
+    {
+        return $this->methodsToHoldChecking;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBmHoldStatus()
+    {
+        return $this->bmHoldStatus;
     }
 }
