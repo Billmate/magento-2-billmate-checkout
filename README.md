@@ -1,29 +1,29 @@
-# Billmate Checkout Payment Gateway for Magento2
+# Billmate Checkout Payment Gateway for Magento 2
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
-## Documentation
-2Do
-
 ## Description
-
-Billmate Checkout is a plugin that extends Magento, allowing your customers to get their products first and pay by invoice to Billmate later (https://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment.
+This is a payment module for Magento 2 that allows you to pay using Billmate Checkout. Billmate Checkout is a payment solution from Billmate that creates a iframe payment solution on the Magento 2 Checkout page. 
 
 ## Important Note
-* This version is Checkout only.
+This repo **only supports Billmate Checkout** and ~~**not Custom Pay~~**.
 
 ## COMPATIBILITY Magento versions
-2.0.x
-2.1.x
-2.2.x
-The version 2.3.* does not support yet.
+2.1.X
+
+2.2.X
+
+2.3.X 
+
+## Documentation
+Will be added in an upcoming release.
 
 ## Supported Languages
 ### Admin
-* English
-* Swedish
+* English (en_US)
+* Swedish (sv_SE)
 ### Frontend
-* English
-* Swedish
+* English (en_US)
+* Swedish (sv_SE)
 
 ## Installation
 ### Via Code Package
@@ -38,42 +38,6 @@ The version 2.3.* does not support yet.
 	php bin/magento setup:upgrade
 	php bin/magento setup:static-content:deploy
 	```
-5. Configure the general settings under "Stores" --> "Configuration" --> "Billmate" --> "Checkout". 
-6. Configure payment method specific settings under "Stores" --> "Configuration" --> "Sales" --> "Payment Methods".
+5. Configure the Billmate Credentials under "Stores" --> "Configuration" --> "Sales" --> "Payment Methods" --> "Billmate Checkout" --> "Credentials"
+6. Configure the General under "Stores" --> "Configuration" --> "Sales" --> "Payment Methods" --> "Billmate Checkout" --> "General"
 7. Make a test purchase for every payment method to verify that you have made the correct settings.
-
-## Known issues
-- More Documentation will be added before version 1.0
-
-##How to place Billmate logo on your site.
-Copy the code below for the size that fits your needs.
-
-###Large
-
-<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>
-
-`<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>`
-
-###Medium
-
-<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>
-
-`<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>`
-
-###Small
-
-<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>
-
-`<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
-
-## Changelog
-
-### 0.9b (2017-09-18)
-* Initial commit.
-### 0.11.0b (2018-12-04)
-* Made full refactoring module.
-### 1.0.0 (2018-12-07)
-* Added security improvements.
-* Removed deprecated configurations.
-* Added pre-configured setup of the module.
-* Fixed design bugs.

@@ -4,15 +4,17 @@
     "type": "magento2-module",
     "authors": [
         {
-            "name": "alex",
-            "email": "alex@ecomatic.se"
+            "name": "Billmate AB",
+            "email": "support@billmate.se"
         }
     ],
-    "require": {},
-    "version": "1.0.0",
+    "require": {
+        "php": "^5.6.5",
+        "magento/framework": ">= 2.1 || <= 2.3"
+    },
+    "version": "1.0.2",
     "license": [
-        "OSL-3.0",
-        "AFL-3.0"
+        "BSD-3-Clause"
     ],
     "autoload": {
         "files": [
