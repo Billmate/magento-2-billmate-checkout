@@ -1,7 +1,7 @@
 <?php
-namespace Billmate\BillmateCheckout\Block\Cart;
+namespace Billmate\BillmateCheckout\Block\Checkout;
 
-class Content extends \Magento\Checkout\Block\Onepage
+class Totals extends \Magento\Checkout\Block\Onepage
 {
 
     /**
@@ -90,14 +90,6 @@ class Content extends \Magento\Checkout\Block\Onepage
 	}
 
     /**
-     * @return \Magento\Quote\Model\Quote\Item[]
-     */
-	public function getItems()
-    {
-        return $this->helper->getItems();
-    }
-
-    /**
      * @param $price
      *
      * @return float|string
@@ -128,98 +120,6 @@ class Content extends \Magento\Checkout\Block\Onepage
     public function displayTaxIncluded()
     {
         return $this->_taxHelper->displayShippingPriceIncludingTax();
-    }
-
-    /**
-     * @param       $product
-     * @param       $imageId
-     * @param array $attributes
-     *
-     * @return mixed
-     */
-    public function getImage($product, $imageId, $attributes = [])
-    {
-        return $this->imageBuilder->setProduct($product)
-            ->setImageId($imageId)
-            ->setAttributes($attributes)
-            ->create();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnabledButtons()
-    {
-        return $this->configHelper->getBtnEnable();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isShowAttribute()
-    {
-        return $this->configHelper->getShowAttribute();
-    }
-
-    /**
-     * @param $item
-     *
-     * @return mixed
-     */
-    public function getProductOptions($item)
-    {
-        /* @var $helper \Magento\Catalog\Helper\Product\Configuration */
-        return $this->configurationPool
-            ->getByProductType($item->getProductType())
-            ->getOptions($item);
-    }
-
-    /**
-     * Accept option value and return its formatted view
-     *
-     * @param mixed $optionValue
-     * Method works well with these $optionValue format:
-     *      1. String
-     *      2. Indexed array e.g. array(val1, val2, ...)
-     *      3. Associative array, containing additional option info, including option value, e.g.
-     *          array
-     *          (
-     *              [label] => ...,
-     *              [value] => ...,
-     *              [print_value] => ...,
-     *              [option_id] => ...,
-     *              [option_type] => ...,
-     *              [custom_view] =>...,
-     *          )
-     *
-     * @return array
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     */
-    public function getFormatedOptionValue($optionValue)
-    {
-        /* @var $helper \Magento\Catalog\Helper\Product\Configuration */
-        $helper = $this->_productConfig;
-        $params = [
-            'max_length' => 55,
-            'cut_replacer' => ' <a href="#" class="dots tooltip toggle" onclick="return false">...</a>'
-        ];
-        return $helper->getFormattedOptionValue($optionValue, $params);
-    }
-
-    /**
-     * @return array
-     */
-    public function getShippingMethodsRates()
-    {
-        return $this->helper->getShippingMethodsRates();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActiveMethod($methodCode)
-    {
-        return $this->helper->isActiveShippingMethod($methodCode);
     }
 
     /**
@@ -280,13 +180,5 @@ class Content extends \Magento\Checkout\Block\Onepage
     public function displayShippingIncludeTax()
     {
         return $this->_taxConfig->displayCartShippingInclTax();
-    }
-
-    /**
-     * @return bool
-     */
-    public function displayPricesIncludeTax()
-    {
-        return $this->_taxConfig->displayCartPricesInclTax();
     }
 }

@@ -1,0 +1,14 @@
+<?php
+/**
+ * @var $block \Billmate\BillmateCheckout\Block\Cart
+ */
+?>
+
+<script>
+    require(
+        ['jquery', 'checkout_actions'],
+        function($, billmateCheckoutActions) {
+            billmateCheckoutActions.init(<?=  $block->getJsonConfig();?>);
+        }
+    );
+</script>

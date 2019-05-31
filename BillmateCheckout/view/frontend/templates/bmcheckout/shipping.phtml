@@ -1,0 +1,28 @@
+<?php
+/**
+ * @var $block \Billmate\BillmateCheckout\Block\Checkout\Shipping
+ */
+?>
+
+<?php $shippingMethodsRates = $block->getShippingMethodsRates() ?>
+<div class="bm-checkout-shipping">
+    <h1><?= __('Shipping Methods') ?></h1>
+    <form>
+        <div class="ship_methods" >
+            <?php foreach ($shippingMethodsRates as $rate): ?>
+                <div>
+                    <input type="radio" class="radio" id="<?= $rate->getCode() ?>"
+                           name="method" value="<?= $rate->getCode() ?>"
+                        <?php if($block->isActiveMethod($rate->getCode())):?> checked <?php endif ?> >
+                    <label for="<?= $rate->getCode() ?>" class="radio_lable" ><?= $rate->getCarrierTitle() ?>
+                        <?php if ($block->displayTaxIncluded()) : ?>
+                            <?= $block->formatPrice($rate->getPriceInclTax()) ?>
+                        <?php else: ?>
+                            <?= $block->formatPrice($rate->getPriceExclTax()) ?>
+                        <?php endif; ?>
+                    </label>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </form>
+</div>

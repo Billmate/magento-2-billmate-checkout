@@ -1,0 +1,15 @@
+<div class="bm-checkout-discount">
+    <h1><?= __('Discount Codes') ?></h1>
+    <form action="javascript:void(0);">
+        <input type="text" name="code" id="code" class="code" >
+        <input type="button" id="codeButton" class="codeButton" value="<?= __('Apply Discount') ?>">
+    </form>
+</div>
+<script>
+    document.getElementById("code").addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode == 13) {
+            document.getElementById("codeButton").click();
+        }
+    });
+</script>
