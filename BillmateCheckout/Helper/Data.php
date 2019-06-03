@@ -92,7 +92,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		\Magento\Checkout\Model\Session $_checkoutSession,
 		\Magento\Quote\Model\QuoteFactory $quote,
         \Magento\Framework\View\LayoutFactory $layoutFactory,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         ProductMetadataInterface $metaData,
         \Magento\Quote\Model\Quote\TotalsCollector $totalsCollector,
         ShippingMethodManagement $shippingManager,
@@ -106,7 +105,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->logger = $context->getLogger();
         $this->metaData = $metaData;
         $this->layoutFactory = $layoutFactory;
-        $this->resultPageFactory = $resultPageFactory;
         $this->totalsCollector = $totalsCollector;
         $this->shippingManager = $shippingManager;
         $this->_moduleList = $moduleList;
@@ -135,17 +133,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getCartContent()
     {
-        $resultPage = $this->resultPageFactory->create();
-        $resultPage->addHandle('billmatecheckout_index_index');
+        $layout = $this->layoutFactory->create();
+        $cartBlock = $layout->createBlock('Billmate\BillmateCheckout\Block\Checkout\Items')
+            ->setTemplate('bmcheckout/items.phtml')->toHtml();
+        $shippingBlock = $layout->createBlock('Billmate\BillmateCheckout\Block\Checkout\Shipping')
+            ->setTemplate('bmcheckout/shipping.phtml')->toHtml();
+        $couponBlock = $layout->createBlock('Billmate\BillmateCheckout\Block\Checkout\Coupon')
+            ->setTemplate('bmcheckout/coupon.phtml')->toHtml();
 
-        $cartBlock = $resultPage->getLayout()->getBlock('billmate.cart.items')->toHtml();
-        $shippingBlock = $resultPage->getLayout()->getBlock('billmate.cart.shipping')->toHtml();
-        $totalsBlock = $resultPage->getLayout()->getBlock('billmate.cart.totals')->toHtml();
-        $couponBlock = $resultPage->getLayout()->getBlock('billmate.cart.coupon')->toHtml();
-        $commentBlock = $resultPage->getLayout()->getBlock('billmate.cart.comment')->toHtml();
-        $subscriptionBlock = $resultPage->getLayout()->getBlock('billmate.cart.subscription')->toHtml();
-        //$sideContent = $resultPage->getLayout()->renderNonCachedElement('bm.checkout.side.block');
-
+        $totalsBlock = $layout->createBlock('Billmate\BillmateCheckout\Block\Checkout\Totals')
+            ->setTemplate('bmcheckout/totals.phtml')->toHtml();
+        $commentBlock = $layout->createBlock('Billmate\BillmateCheckout\Block\Checkout\Comment')
+            ->setTemplate('bmcheckout/comment.phtml')->toHtml();
+        $subscriptionBlock = $layout->createBlock('Billmate\BillmateCheckout\Block\Checkout\Subscription')
+            ->setTemplate('bmcheckout/subscription.phtml')->toHtml();
 
         return $cartBlock . $shippingBlock . $totalsBlock . $couponBlock . $commentBlock . $subscriptionBlock;
     }
