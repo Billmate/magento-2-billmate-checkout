@@ -89,7 +89,7 @@ define([
             });
         },
 		updateHtmlContent: function(data) {
-            document.getElementById('billmate-cart').innerHTML = data.cart;
+            $('#billmate-cart').html(data.cart);
 		},
 		updateCustomerData: function() {
             require([

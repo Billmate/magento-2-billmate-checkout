@@ -13,7 +13,7 @@
 						   htmlTag="div" htmlId="billmate-cart"
 						   htmlClass="bm-checkout-side-wrapper">
 					<block class="Billmate\BillmateCheckout\Block\Checkout\Items"
-						   cacheable="false" name="billmate.cart.content"
+						   cacheable="false" name="billmate.cart.items"
 						   template="bmcheckout/items.phtml">
 						<block class="Magento\Bundle\Block\Checkout\Cart\Item\Renderer" name="bm.item.renderer"/>
 					</block>
