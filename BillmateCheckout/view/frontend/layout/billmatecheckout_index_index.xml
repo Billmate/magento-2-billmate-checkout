@@ -1,48 +1,28 @@
 <?xml version="1.0"?>
-<page layout="checkout" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 	<head>
 		<css src="Billmate_BillmateCheckout/css/checkout.css"/>
 	</head> 
 	<body>
-		<referenceContainer name="page.main.title" remove="true" />
-
+		<referenceContainer name="checkout.root" remove="true" />
+		<referenceContainer name="header.container" remove="true" />
+		<referenceContainer name="header_container" remove="true" />
+		<referenceBlock name="base-header-container" remove="true" />
+		<referenceContainer name="store.menu" remove="true" />
+		<referenceContainer name="container_mobile_header_top" remove="true" />
 		<referenceContainer name="page.wrapper">
-			<container name="bm-cart" htmlTag="div" htmlClass="bm-cart-wrapper" after="main"/>
-			<container name="bm.checkout.page" htmlTag="div" htmlClass="bm-checkout-wrapper">
-				<container name="bm.checkout.side.block"
-						   htmlTag="div" htmlId="billmate-cart"
-						   htmlClass="bm-checkout-side-wrapper">
-					<block class="Billmate\BillmateCheckout\Block\Checkout\Items"
-						   cacheable="false" name="billmate.cart.content"
-						   template="bmcheckout/items.phtml">
-						<block class="Magento\Bundle\Block\Checkout\Cart\Item\Renderer" name="bm.item.renderer"/>
+			<container name="bm-cart" htmlTag="div" htmlClass="bm-cart-wrapper" after="main">
+				<block class="Billmate\BillmateCheckout\Block\Cart" ifconfig="payment/billmate_checkout/general/enable" cacheable="false" name="billmatecart" template="cart.phtml" before="main" after="header-wrapper">
+					<block class="Billmate\BillmateCheckout\Block\Cart\Content" ifconfig="payment/billmate_checkout/general/enable"
+					   cacheable="false" name="billmate.cart.content" template="cart/content.phtml">
+						<block class="Magento\Bundle\Block\Checkout\Cart\Item\Renderer" name="bm.item.renderer"></block>
 					</block>
-					<block class="Billmate\BillmateCheckout\Block\Checkout\Shipping"
-						   cacheable="false" name="billmate.cart.shipping"
-						   template="bmcheckout/shipping.phtml"/>
-					<block class="Billmate\BillmateCheckout\Block\Checkout\Totals"
-						   cacheable="false" name="billmate.cart.totals"
-						   template="bmcheckout/totals.phtml"/>
-					<block class="Billmate\BillmateCheckout\Block\Checkout\Coupon"
-						   cacheable="false" name="billmate.cart.coupon"
-						   template="bmcheckout/coupon.phtml"/>
-					<block class="Billmate\BillmateCheckout\Block\Checkout\Comment"
-						   cacheable="false" name="billmate.cart.comment"
-						   template="bmcheckout/comment.phtml"/>
-					<block class="Billmate\BillmateCheckout\Block\Checkout\Subscription"
-						   cacheable="false" name="billmate.cart.subscription"
-						   template="bmcheckout/subscription.phtml"/>
-					<block class="Billmate\BillmateCheckout\Block\Checkout"
-						   cacheable="false" name="billmate.cart.js.actions"
-						   template="bmcheckout/js-init.phtml"/>
-				</container>
-				<container name="bm.checkout.iframe.block" htmlTag="div" htmlClass="bm-checkout-iframe-wrapper">
-					<block class="Billmate\BillmateCheckout\Block\Checkout\Iframe"
-						   cacheable="false" name="billmate.iframe"
-						   template="bmcheckout/iframe.phtml"/>
-				</container>
+				</block>
+			</container>
+			<container name="bm-checkout" htmlTag="div" htmlClass="bm-checkout-wrapper" after="bm-cart">
+				<block class="Billmate\BillmateCheckout\Block\Checkout" ifconfig="payment/billmate_checkout/general/enable" cacheable="false" name="billmatecheckout" template="checkout.phtml" after="bm-cart"/>
 			</container>
 		</referenceContainer>
-		<move element="logo" destination="bm-cart" before="-"/>
+		<move element="logo" destination="bm-cart" before="billmatecart"/>
 	</body>
 </page>

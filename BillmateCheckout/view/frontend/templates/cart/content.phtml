@@ -1,0 +1,127 @@
+<?php
+/**
+* Shopping cart content template
+*
+* @var $block \Billmate\BillmateCheckout\Block\Cart\Content
+*/
+?>
+<?php $items = $block->getItems() ?>
+<?php $shippingMethodsRates = $block->getShippingMethodsRates() ?>
+<?php $isEnabledButtons = $block->isEnabledButtons() ?>
+
+<h2><?= __('Shopping Cart') ?></h2>
+
+<div class="table-responsive">
+    <div class="billmate-checkout-cart-table">
+        <div class="billmate-checkout-table-head">
+            <div class="billmate-checkout-product-head"><?= __('Product') ?></div>
+            <div class="billmate-checkout-price-head"><?= __('Price') ?></div>
+            <div class="billmate-checkout-qty-head"><?= __('Quantity') ?></div>
+            <div class="billmate-checkout-sum-head"><?= __('Sum') ?></div>
+        </div>
+        <?php foreach ($items as $item) : ?>
+        <span id="billmate-checkout-line" class="billmate-checkout-line"></span>
+        <div class="billmate-checkout-product-row">
+            <div class="billmate-checkout-img">
+                <?= $block->getImage($item->getProduct(), 'billmate_checkout_content')->toHtml() ?>
+            </div>
+            <div class="billmate-checkout-name">
+                <p><?= $block->escapeHtml($item->getName()) ?></p>
+                <?php if($block->isShowAttribute()): ?>
+                    <div class="bm-options-wrapper">
+                    <?php if ($_options = $block->getProductOptions($item)):?>
+                        <dl class="item-options">
+                            <?php foreach ($_options as $_option) : ?>
+                                <?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?>
+                                <dt><?= $block->escapeHtml($_option['label']) ?></dt>
+                                <dd>
+                                    <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                                        <?= /* @escapeNotVerified */ $_formatedOptionValue['full_view'] ?>
+                                    <?php else: ?>
+                                        <?= /* @escapeNotVerified */ $_formatedOptionValue['value'] ?>
+                                    <?php endif; ?>
+                                </dd>
+                            <?php endforeach; ?>
+                        </dl>
+                    <?php endif;?>
+                    </div>
+                <?php  endif; ?>
+            </div>
+            <div class="billmate-checkout-price" id="price_<?= $item->getId() ?>"><?= $block->formatPrice($block->displayPricesIncludeTax()? $item->getPriceInclTax() : $item->getPrice()) ?></div>
+            <div class="billmate-checkout-qty <?= !$isEnabledButtons? 'no-buttons' : '' ?>" id="qty_<?= $item->getId() ?>">
+                <?php if($isEnabledButtons): ?>
+                    <button class="billmate-checkout-button-sub sub" id="bm-sub-btn sub_<?= $item->getId() ?>" name="sub">
+                        <span class="action-sign-decr">
+                            &#8211;
+                        </span>
+                    </button>
+                <?php endif ?>
+                <div class="billmate-checkout-product-qty"><?= $item->getQty() ?></div>
+                <?php if($isEnabledButtons): ?>
+                    <button id="bm-inc-btn inc_<?= $item->getId() ?>" class="billmate-checkout-button-inc inc" name="inc">
+                        <span class="action-sign-inc">
+                            &#43;
+                        </span>
+                    </button>
+                <?php endif ?>
+            </div>
+            <div class="billmate-checkout-sum" id="sum_<?= $item->getId() ?>"><?= $block->formatPrice($block->displayPricesIncludeTax()? $item->getRowTotalInclTax() : $item->getRowTotal()) ?></div>
+            <div class="billmate-checkout-del-but">
+                <span id="bm-del-btn del_<?= $item->getId() ?>" class="billmate-checkout-button-del del" name="del"></span>
+            </div>
+            <span id="billmate-checkout-line" class="billmate-checkout-line"></span>
+        </div>
+
+        <?php endforeach; ?>
+    </div>
+</div>
+<table class="totals">
+    <tr>
+        <td class="name"><?= __('Shipping') ?></td><td class="price"><?= $block->formatPrice($block->getShippingValue()) ?></td>
+    </tr>
+    <tr>
+    <?php if($this->hasDiscount()): ?>
+        <td class="name"><?= __('Discount') ?></td>
+        <td class="price"><?= $block->formatPrice($block->getDiscountValue()) ?></td>
+    </tr>
+    <tr>
+        <?php endif ?>
+        <td class="name"><?= __('Tax') ?></td><td class="price"><?=  $block->formatPrice($block->getTaxValue()) ?></td></tr><tr>
+        <td class="name"><?= __('Total') ?></td><td class="price"><?= $block->formatPrice($block->getTotalValue()) ?></td>
+    </tr>
+</table>
+<div class="billmate-checkout-discount">
+    <h1><?= __('Discount Codes') ?></h1>
+    <form action="javascript:void(0);">
+        <input type="text" name="code" id="code" class="code" >
+        <input type="button" id="codeButton" class="codeButton" value="<?= __('Apply Discount') ?>">
+    </form>
+</div>
+<script>
+    document.getElementById("code").addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode == 13) {
+            document.getElementById("codeButton").click();
+        }
+    });
+</script>
+
+<div class="billmate_shipping_methos">
+    <h1><?= __('Shipping Methods') ?></h1>
+    <form>
+        <div class="ship_methods" >
+            <?php foreach ($shippingMethodsRates as $rate): ?>
+                <input type="radio" class="radio" id="<?= $rate->getCode() ?>"
+                       name="method" value="<?= $rate->getCode() ?>"
+                    <?php if($block->isActiveMethod($rate->getCode())):?> checked <?php endif ?> >
+                <label for="<?= $rate->getCode() ?>" class="radio_lable" ><?= $rate->getCarrierTitle() ?>
+                    <?php if ($block->displayTaxIncluded()) : ?>
+                        <?= $block->formatPrice($rate->getPriceInclTax()) ?>
+                    <?php else: ?>
+                        <?= $block->formatPrice($rate->getPriceExclTax()) ?>
+                    <?php endif; ?>
+                </label>
+            <?php endforeach; ?>
+        </div>
+    </form>
+</div>

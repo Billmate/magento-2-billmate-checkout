@@ -45,8 +45,6 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
      */
     protected $_canRefundInvoicePartial = false;
 
-    protected $_canCancelInvoice = true;
-
     /**
      * @var bool
      */

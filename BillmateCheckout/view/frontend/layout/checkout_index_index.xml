@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  layout="checkout" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<body>
+		<referenceContainer name="page.wrapper">
+			<container name="bm-cart" htmlTag="div" htmlClass="bm-cart-wrapper" after="main">
+				<block class="Billmate\BillmateCheckout\Block\Cart"
+					   ifconfig="payment/billmate_checkout/general/enable"
+					   cacheable="true"
+					   name="billmatecart"
+					   template="cart.phtml"
+					   before="main"
+					   after="header-wrapper" />
+			</container>
+			<container name="bm-checkout" htmlTag="div"  htmlClass="bm-checkout-wrapper" after="bm-cart">
+				<block class="Billmate\BillmateCheckout\Block\Checkout"
+					   ifconfig="payment/billmate_checkout/general/enable"
+					   name="billmatecheckout"
+					   template="checkout.phtml"
+					   after="bm-cart"/>
+			</container>
+		</referenceContainer>
+	</body>
+</page>
