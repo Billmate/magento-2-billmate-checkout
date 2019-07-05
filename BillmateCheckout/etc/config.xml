@@ -35,18 +35,26 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <billmate_billmatecheckout>
+            <general>
+                <enable>0</enable>
+                <testmode>1</testmode>
+                <pushorderevents>1</pushorderevents>
+                <inc_dec_btns>1</inc_dec_btns>
+                <show_attributes_cart>1</show_attributes_cart>
+                <inc_dec_btns>1</inc_dec_btns>
+            </general>
+        </billmate_billmatecheckout>
         <payment>
             <billmate_checkout>
-                <billmate_configs>
-                    <general>
-                        <enable>0</enable>
-                        <testmode>1</testmode>
-                        <pushorderevents>1</pushorderevents>
-                        <inc_dec_btns>1</inc_dec_btns>
-                        <show_attributes_cart>1</show_attributes_cart>
-                        <inc_dec_btns>1</inc_dec_btns>
-                    </general>
-                </billmate_configs>
+                <general>
+                    <enable>0</enable>
+                    <testmode>1</testmode>
+                    <pushorderevents>1</pushorderevents>
+                    <inc_dec_btns>1</inc_dec_btns>
+                    <show_attributes_cart>1</show_attributes_cart>
+                    <inc_dec_btns>1</inc_dec_btns>
+                </general>
                 <payment_action>capture</payment_action>
                 <model>Billmate\BillmateCheckout\Model\Payment\BillmateCheckout</model>
                 <active>1</active>
