@@ -40,6 +40,8 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
      * @var \Billmate\BillmateCheckout\Model\Api\Billmate
      */
     protected $billmateProvider;
+
+    protected $quoteFactory;
 	
 	public function __construct(
 		Context $context,
@@ -51,8 +53,10 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
         \Magento\Framework\Registry $registry,
         \Magento\Checkout\Model\Session\SuccessValidator $successValidator,
         \Billmate\BillmateCheckout\Model\Order $orderModel,
-        \Billmate\BillmateCheckout\Model\Api\Billmate $billmateProvider
+        \Billmate\BillmateCheckout\Model\Api\Billmate $billmateProvider,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory
 	) {
+	    $this->quoteFactory = $quoteFactory;
 		$this->eventManager = $eventManager;
 		$this->resultPageFactory = $resultPageFactory;
 		$this->checkoutSession = $checkoutSession;
@@ -102,10 +106,12 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
 				'checkout_onepage_controller_success_action',
 				['order_ids' => [$order->getId()]]
 			);
+			$this->quoteFactory->create()->load($order->getQuoteId())->setIsActive(0)->save();
 
 			$this->checkoutSession->setLastSuccessQuoteId($this->helper->getQuote()->getId());
 			$this->checkoutSession->setLastQuoteId($this->helper->getQuote()->getId());
 			$this->checkoutSession->setLastOrderId($orderId);
+
 		}
 		catch (\Exception $e){
             $this->helper->clearBmSession();

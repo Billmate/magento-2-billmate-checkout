@@ -13,6 +13,8 @@ class Success extends \Magento\Framework\View\Element\Template
      */
     protected $registry;
 
+    protected $checkoutSession;
+
     /**
      * Success constructor.
      *
@@ -23,10 +25,12 @@ class Success extends \Magento\Framework\View\Element\Template
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Billmate\BillmateCheckout\Helper\Data $_helper,
+        \Magento\Checkout\Model\Session $_checkoutSession,
         \Magento\Framework\Registry $registry,
         array $data = []
     ) {
         parent::__construct($context, $data);
+        $this->checkoutSession = $_checkoutSession;
 		$this->helper = $_helper;
         $this->registry = $registry;
 	}
@@ -45,5 +49,13 @@ class Success extends \Magento\Framework\View\Element\Template
     public function getSucessUrl()
     {
         return $this->helper->getSessionData('iframe_url');
+    }
+
+    public function clearSession(){
+        $this->checkoutSession->clearStorage();
+        $this->checkoutSession->clearQuote();
+        $this->helper->setSessionData('bm-inc-id', null);
+        $this->helper->setSessionData('billmate_email', null);
+        $this->helper->setSessionData('billmate_billing_address', null);
     }
 }
