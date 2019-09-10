@@ -68,11 +68,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getPushEvents()
     {
-        return $this->getConfig(self::XML_PATH_GENERAL_PUSHORDEREVENTS);
+        return (bool)$this->getConfig(self::XML_PATH_GENERAL_PUSHORDEREVENTS);
     }
 
     /**
