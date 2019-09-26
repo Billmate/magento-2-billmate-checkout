@@ -101,7 +101,6 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 "number" => $requestData['data']['number']
             );
             $paymentInfo = $this->billmateProvider->getPaymentinfo($values);
-            //$paymentInfo['PaymentData']['orderid'] = '000000217';
             $order = $this->helper->getOrderByIncrementId($paymentInfo['PaymentData']['orderid']);
             if (!is_string($order->getIncrementId())) {
                 $orderInfo = $this->getOrderInfo($paymentInfo);
@@ -116,11 +115,11 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
 
             $order->setData('billmate_invoice_id', $requestData['data']['number']);
             if (
-                $paymentInfo['PaymentData']['status'] == 'Created'||
-                ($paymentInfo['PaymentData']['status'] == 'Paid')
+                $requestData['data']['status'] == 'Created'||
+                ($requestData['data']['status'] == 'Paid')
             ) {
                 $orderState = $this->helper->getApproveStatus();
-            } elseif ($paymentInfo['PaymentData']['status'] == 'Pending') {
+            } elseif ($requestData['data']['status'] == 'Pending') {
                 $orderState = $this->helper->getPendingStatus();
             } else {
                 $orderState = $this->helper->getDenyStatus();
