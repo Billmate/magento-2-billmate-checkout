@@ -23,7 +23,11 @@
         <span id="billmate-checkout-line" class="billmate-checkout-line"></span>
         <div class="billmate-checkout-product-row">
             <div class="billmate-checkout-img">
-                <?= $block->getImage($item->getProduct(), 'billmate_checkout_content')->toHtml() ?>
+                <span class="product-image-container" style="width:80px;">
+                    <span class="product-image-wrapper" style="padding-bottom: 100%;">
+                        <img class="product-image-photo" src="<?php echo $block->getImage($item); ?>" max-width="80" max-height="80" alt="Radiant Tee">
+                    </span>
+                </span>
             </div>
             <div class="billmate-checkout-name">
                 <p><?= $block->escapeHtml($item->getName()) ?></p>
