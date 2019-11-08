@@ -25,6 +25,11 @@
 						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 						<comment>Enable/Disable Billmate Test Mode</comment>
 					</field>
+					<field id="ordercomments" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+						<label>Enable Order Comments</label>
+						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+						<comment>Enable/Disable Order Comments</comment>
+					</field>
 					<field id="pushorderevents" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
 						<label>Push order events to Billmate</label>
 						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

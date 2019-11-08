@@ -1,6 +1,22 @@
 define([
 	'jquery'
 ], function ($, billmateajax) {
+    document.getElementById("order-comments").addEventListener("keyup", function(event) {
+        event.preventDefault();
+        var param = {
+            comment: document.getElementById('order-comments').value
+        }
+        console.log(param);
+        $.ajax({
+            url: comment_url,
+            data: param,
+            type: "POST",
+            dataType: 'json'
+        }).done(function (data) {
+        }).fail(function (jqXHR, status, error) {
+        });
+    });
+
 	window.method = null;
 	window.address_selected = null;
 	window.latestScroll = null;
