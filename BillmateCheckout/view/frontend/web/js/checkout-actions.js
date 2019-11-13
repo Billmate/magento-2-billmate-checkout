@@ -23,7 +23,6 @@ define([
                     var param = {
                         comment: document.getElementById('order-comments').value
                     };
-                    console.log(param);
                     $.ajax({
                         url: comment_url,
                         data: param,

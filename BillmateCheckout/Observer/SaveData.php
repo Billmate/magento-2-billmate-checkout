@@ -9,18 +9,21 @@ class SaveData extends AbstractDataAssignObserver{
 
     protected $order;
     protected $quote;
+    protected $checkoutSession;
 
     public function __construct(
         \Magento\Sales\Model\Order $order,
-        \Magento\Quote\Model\Quote $quote
+        \Magento\Quote\Model\Quote $quote,
+        \Magento\Checkout\Model\Session $_checkoutSession
     ){
         $this->order = $order;
         $this->quote = $quote;
+        $this->checkoutSession = $_checkoutSession;
     }
 
     public function execute(Observer $observer){
         $orderIds = $observer->getEvent()->getOrderIds();
-        if (empty($orderIds) || !is_array($orderIds)) {
+        if (empty($orderIds) || !is_array($orderIds) || $this->checkoutSession->getData('has_saved_comment') == 1) {
             return;
         }
         foreach ($orderIds as $orderId){
@@ -30,5 +33,6 @@ class SaveData extends AbstractDataAssignObserver{
             $order->addStatusHistoryComment($comment);
             $order->save();
         }
+        $this->checkoutSession->setData('has_saved_comment', 1);
     }
 }
