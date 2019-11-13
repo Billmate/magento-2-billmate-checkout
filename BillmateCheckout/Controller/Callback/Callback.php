@@ -88,7 +88,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
 	public function execute()
     {
         $jsonResponse = $this->resultJsonFactory->create();
-        $requestData = $this->getBmRequestData();
+        $requestData = $this->getBmRebquestData();
 		$hash = $this->getHashCode($requestData);
 
 		try{
@@ -115,8 +115,9 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
 
             $order->setData('billmate_invoice_id', $requestData['data']['number']);
             if (
-                $requestData['data']['status'] == 'Created'||
-                ($requestData['data']['status'] == 'Paid')
+                $requestData['data']['status'] == 'Created' ||
+                $requestData['data']['status'] == 'Paid' ||
+                $requestData['data']['status'] == 'Approved'
             ) {
                 $orderState = $this->helper->getApproveStatus();
             } elseif ($requestData['data']['status'] == 'Pending') {
