@@ -112,7 +112,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 }
                 $order = $this->helper->getOrderById($order_id);
             }
-
+            $orderState = "";
             $order->setData('billmate_invoice_id', $requestData['data']['number']);
             if (
                 $requestData['data']['status'] == 'Created' ||
@@ -121,13 +121,19 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             ) {
                 $orderState = $this->helper->getApproveStatus();
             } elseif ($requestData['data']['status'] == 'Pending') {
-                $orderState = $this->helper->getPendingStatus();
+                if ($order->getStatus() == 'pending_payment') {
+                    $orderState = $this->helper->getPendingStatus();
+                }
             } else {
-                $orderState = $this->helper->getDenyStatus();
+                if ($order->getStatus() == 'pending_payment') {
+                    $orderState = $this->helper->getDenyStatus();
+                }
             }
-            $order->setState($orderState)->setStatus($orderState);
-            $order->save();
-            $respMessage = _('Order status successfully updated.');
+            if ($orderState != "") {
+                $order->setState($orderState)->setStatus($orderState);
+                $order->save();
+                $respMessage = _('Order status successfully updated.');
+            }
 
         } catch(\Exception $exception) {
             $respMessage = $exception->getMessage();
