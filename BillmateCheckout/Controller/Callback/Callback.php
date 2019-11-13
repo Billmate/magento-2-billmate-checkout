@@ -101,7 +101,6 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 "number" => $requestData['data']['number']
             );
             $paymentInfo = $this->billmateProvider->getPaymentinfo($values);
-            //$paymentInfo['PaymentData']['orderid'] = '000000217';
             $order = $this->helper->getOrderByIncrementId($paymentInfo['PaymentData']['orderid']);
             if (!is_string($order->getIncrementId())) {
                 $orderInfo = $this->getOrderInfo($paymentInfo);
@@ -113,21 +112,28 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 }
                 $order = $this->helper->getOrderById($order_id);
             }
-
+            $orderState = "";
             $order->setData('billmate_invoice_id', $requestData['data']['number']);
             if (
-                $paymentInfo['PaymentData']['status'] == 'Created'||
-                ($paymentInfo['PaymentData']['status'] == 'Paid')
+                $requestData['data']['status'] == 'Created' ||
+                $requestData['data']['status'] == 'Paid' ||
+                $requestData['data']['status'] == 'Approved'
             ) {
                 $orderState = $this->helper->getApproveStatus();
-            } elseif ($paymentInfo['PaymentData']['status'] == 'Pending') {
-                $orderState = $this->helper->getPendingStatus();
+            } elseif ($requestData['data']['status'] == 'Pending') {
+                if ($order->getStatus() == 'pending_payment') {
+                    $orderState = $this->helper->getPendingStatus();
+                }
             } else {
-                $orderState = $this->helper->getDenyStatus();
+                if ($order->getStatus() == 'pending_payment') {
+                    $orderState = $this->helper->getDenyStatus();
+                }
             }
-            $order->setState($orderState)->setStatus($orderState);
-            $order->save();
-            $respMessage = _('Order status successfully updated.');
+            if ($orderState != "") {
+                $order->setState($orderState)->setStatus($orderState);
+                $order->save();
+                $respMessage = _('Order status successfully updated.');
+            }
 
         } catch(\Exception $exception) {
             $respMessage = $exception->getMessage();
