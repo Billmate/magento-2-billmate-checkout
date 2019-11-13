@@ -96,8 +96,6 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
                     );
                 }
 
-                $this->orderModel->checkOnHoldProcess($orderId);
-
                 $this->helper->setSessionData('bm_order_id', $orderId);
 			}
 

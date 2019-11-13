@@ -245,13 +245,6 @@ class Order
         return \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT;
     }
 
-    public function checkOnHoldProcess($orderId)
-    {
-        if ($this->isReadyToHold()) {
-            $this->orderManagement->hold($orderId);
-        }
-    }
-
     /**
      * @return bool
      */
