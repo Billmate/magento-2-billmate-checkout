@@ -88,7 +88,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
 	public function execute()
     {
         $jsonResponse = $this->resultJsonFactory->create();
-        $requestData = $this->getBmRebquestData();
+        $requestData = $this->getBmRequestData();
 		$hash = $this->getHashCode($requestData);
 
 		try{
