@@ -13,6 +13,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CREDENTIALS_ID = 'payment/billmate_checkout/credentials/billmate_id';
     const XML_PATH_CREDENTIALS_KEY = 'payment/billmate_checkout/credentials/billmate_key';
     const XML_PATH_GENERAL_TESTMODE = 'payment/billmate_checkout/general/testmode';
+    const XML_PATH_CHECKOUT_MODE = 'payment/billmate_checkout/general/billmate_checkout_mode';
 
     /**
      * @param $config_path
@@ -105,5 +106,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public function getPPURL()
     {
         return $this->getConfig(self::XML_PATH_GENERAL_PP_URL);
+    }
+
+    public function getCheckoutMode(){
+        return $this->getConfig(self::XML_PATH_CHECKOUT_MODE);
     }
 }
