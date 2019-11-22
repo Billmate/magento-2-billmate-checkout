@@ -14,6 +14,11 @@ define([
 				type: 'POST',
 				success: function(response){
 					document.getElementById('billmate-cart').innerHTML = response.cart;
+					console.log("checkout");
+					console.log(response);
+					if (typeof response.orderMessage !== "undefined") {
+                        document.getElementById('order-comments').value = response.orderMessage
+                    }
 				}
 			});
 		};

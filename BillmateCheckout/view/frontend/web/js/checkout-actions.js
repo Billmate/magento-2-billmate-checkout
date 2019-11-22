@@ -107,6 +107,11 @@ define([
             },
             updateHtmlContent: function (data) {
                 document.getElementById('billmate-cart').innerHTML = data.cart;
+                console.log("checkout-actions");
+                console.log(data);
+                if (typeof data.orderMessage !== "undefined") {
+                    document.getElementById('order-comments').value = data.orderMessage
+                }
             },
             updateCustomerData: function () {
                 require([

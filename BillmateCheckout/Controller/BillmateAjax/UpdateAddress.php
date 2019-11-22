@@ -73,10 +73,20 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
             $result = $this->resultJsonFactory->create();
 			$iframe = $this->iframeHelper->updateIframe();
 			$cart = $this->helper->getCartContent();
-			$return = [
-				'iframe'=>$iframe,
-				'cart'=>$cart
-			];
+            $ordermessage = $this->helper->getQuote()->getData('order_comment');
+            if (!empty($ordermessage)) {
+                $return = array(
+                    'iframe' => $iframe,
+                    'cart' => $cart,
+                    'orderMessage' => $ordermessage
+                );
+            }
+            else {
+                $return = array(
+                    'iframe' => $iframe,
+                    'cart' => $cart
+                );
+            }
 			return $result->setData($return);
 		}
 	}
