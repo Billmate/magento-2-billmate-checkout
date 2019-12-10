@@ -92,10 +92,20 @@ class BillmateAjax extends \Magento\Framework\App\Action\Action
 
             $cartBlockContent = $this->helper->getCartContent();
             $iframeUrl = $this->iframeHelper->updateIframe();
-            $return = array(
-                'iframe' => $iframeUrl,
-                'cart' => $cartBlockContent
-            );
+            $ordermessage = $this->helper->getQuote()->getData('order_comment');
+            if (!empty($ordermessage)) {
+                $return = array(
+                    'iframe' => $iframeUrl,
+                    'cart' => $cartBlockContent,
+                    'orderMessage' => $ordermessage
+                );
+            }
+            else {
+                $return = array(
+                    'iframe' => $iframeUrl,
+                    'cart' => $cartBlockContent
+                );
+            }
             return $result->setData($return);
 		}
 	}
