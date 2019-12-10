@@ -221,6 +221,10 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
             if ($privacyPolicyURL) {
                 $data['CheckoutData']['privacyPolicy'] = $privacyPolicyURL;
             }
+            $checkoutMode = $this->configHelper->getCheckoutMode();
+            if ($checkoutMode == "business"){
+                $data['CheckoutData']['companyView'] = "true";
+            }
         }
 
         $billmateCheckoutId = $this->getBillmateCheckoutId();
