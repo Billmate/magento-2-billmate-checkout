@@ -30,7 +30,7 @@ class SaveData extends AbstractDataAssignObserver{
             $order = $this->order->load($orderId);
             $quote = $this->quote->loadByIdWithoutStore($order->getQuoteId());
             $comment = $quote->getData('order_comment');
-            $order->addStatusHistoryComment($comment);
+            $order->addStatusHistoryComment(__('Order Comment:') . " " . $comment);
             $order->save();
         }
         $this->checkoutSession->setData('has_saved_comment', 1);
