@@ -10,6 +10,7 @@
     $url = $block->getUrl();
     $billmateData = $this->getBillmateCheckoutData();
 ?>
+
 <script>
 	var UPDATE_ADDRESS_URL = "<?php echo $url . 'billmatecheckout/billmateajax/updateaddress'; ?>";
 	var UPDATE_PAYMENT_METHOD_URL = "<?php echo $url . 'billmatecheckout/billmateajax/updatepaymentmethod'; ?>";
@@ -18,6 +19,7 @@
 	var UPDATE_TOTALS_URL = "<?php echo $url . 'billmatecheckout/billmateajax/updatetotals'; ?>";
 	var UPDATE_DISCOUNT_URL = "<?php echo $url . 'billmatecheckout/billmateajax/setdiscount'; ?>";
 	var SET_PAYMENTMETHOD_URL = "<?php echo $url . 'billmatecheckout/billmateajax/setpaymentmethod'; ?>";
+    var comment_url = <?php echo "\"" . $url . "billmatecheckout/comment/comment\""; ?>;
 	require(
 		['jquery', 'Billmate_BillmateCheckout/js/checkout'],
 		function($, billmateajax) {}
