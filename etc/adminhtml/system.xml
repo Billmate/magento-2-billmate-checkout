@@ -48,6 +48,11 @@
 						<label>Privacy Policy</label>
 						<comment>Put here full URL to privacy policy (ex: https://youdomain.com/privacy-policy-url)</comment>
 					</field>
+					<field id="billmate_checkout_mode" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+						<label>Checkout MODE</label>
+						<comment><![CDATA[Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout.]]></comment>
+						<source_model>Billmate\BillmateCheckout\Model\Config\Source\Business</source_model>
+					</field>
 				</group>
 				<group id="credentials" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Credentials</label>
