@@ -12,7 +12,7 @@ This repo **only supports Billmate Checkout** and ~~**not Custom Pay~~**.
 
 2.2.X
 
-2.3.X is not yet supported but is planned for the 1.1.0 release.
+2.3.X
 
 ## Documentation
 Will be added in an upcoming release.
