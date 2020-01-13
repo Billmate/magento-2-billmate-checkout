@@ -136,6 +136,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             }
 
         } catch(\Exception $exception) {
+            $jsonResponse->setHttpResponseCode(500);
             $respMessage = $exception->getMessage();
         }
         return $jsonResponse->setData($respMessage);
