@@ -17,7 +17,7 @@
     ],
     "autoload": {
         "files": [
-            "BillmateCheckout/registration.php"
+            "registration.php"
         ],
         "psr-4": {
             "Billmate\\BillmateCheckout\\": "BillmateCheckout"
