@@ -29,6 +29,11 @@ class Order
     protected $bmHoldStatus = 'Pending';
 
     /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
+    protected $metaDataInterface;
+
+    /**
      * Order constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
@@ -40,6 +45,7 @@ class Order
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender        $orderSender
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
      * @param \Billmate\BillmateCheckout\Helper\Data                     $dataHelper
+     * @param \Magento\Framework\App\ProductMetadataInterface            $metaDataInterface
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -51,7 +57,8 @@ class Order
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Magento\Sales\Api\OrderManagementInterface $orderManagement,
-        \Billmate\BillmateCheckout\Helper\Data $dataHelper
+        \Billmate\BillmateCheckout\Helper\Data $dataHelper,
+        \Magento\Framework\App\ProductMetadataInterface $metaDataInterface
     ){
         $this->_storeManager = $storeManager;
         $this->customerFactory = $customerFactory;
@@ -63,6 +70,7 @@ class Order
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->orderManagement = $orderManagement;
         $this->dataHelper = $dataHelper;
+        $this->metaDataInterface = $metaDataInterface;
     }
 
     /**
@@ -95,8 +103,10 @@ class Order
 
             $order = $this->dataHelper->getOrderById($orderId);
 
-            $this->orderSender->send($order);
-
+            if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
+                $this->orderSender->send($order);
+            }
+            
             $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
 
             $orderState = $this->getOrderState();
