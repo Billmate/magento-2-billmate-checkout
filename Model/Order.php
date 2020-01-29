@@ -103,7 +103,7 @@ class Order
 
             $order = $this->dataHelper->getOrderById($orderId);
 
-            if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '>')) {
+            if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
                 $this->orderSender->send($order);
             }
             
