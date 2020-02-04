@@ -103,10 +103,8 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
             $this->registry->register('bm-inc-id', $this->helper->getSessionData('bm-inc-id'));
 			$orderId = $order->getId();
 
-			if (!isset($paymentInfo['message'])) {
-                $order->setData('billmate_invoice_id', $requestData['data']['number']);
-                $order->save();
-            }
+            $order->setData('billmate_invoice_id', $requestData['data']['number']);
+            $order->save();
 
 			$this->eventManager->dispatch(
 				'checkout_onepage_controller_success_action',
