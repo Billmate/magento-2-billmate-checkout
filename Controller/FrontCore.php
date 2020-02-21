@@ -23,6 +23,6 @@ abstract class FrontCore extends AbsModified
         if ($jsonBodyRequest) {
             return json_decode($jsonBodyRequest, true);
         }
-        throw new Exception('The request does not contain information');
+        throw new \Exception('The request does not contain information');
     }
 }
