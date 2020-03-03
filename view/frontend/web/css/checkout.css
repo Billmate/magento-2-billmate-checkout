@@ -489,3 +489,308 @@ table.totals td.name {
 .bm-options-wrapper .item-options {
     font-size: 12px;
 }
+
+
+/* Fix 2020-02-28 */
+.billmate-checkout-qty {
+    /*display: block;*/
+    float: left;
+    /* margin-left: 50px; */
+    /* width: 110px; */
+
+    margin-left: 20px;
+    width: 100px;
+
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-direction: normal;
+    -webkit-box-orient: horizontal;
+    -moz-box-direction: normal;
+    -moz-box-orient: horizontal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+
+    -webkit-flex-flow: wrap;
+    -ms-flex-flow: wrap;
+    flex-flow: wrap;
+}
+
+.billmate-checkout-qty .action-sign-decr {
+    display: block;
+    /* height: 20px; */
+
+    height: auto;
+}
+
+.billmate-checkout-product-qty {
+    background-color: #f3f3f3;
+    /* padding: 8px 12px 10px; */
+    font-weight: bold;
+    display: inline;
+    /* width: 14px; */
+
+    padding: 8px 0px 10px;
+    width: 30px;
+    height: 37px;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 15px;
+    line-height: 25px;
+}
+
+
+.billmate-order-comments {
+    display: block;
+    float: left;
+    width: 100%;
+    height: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.billmate-order-comments textarea {
+    display: block;
+    width: 100%;
+    max-width: 375px;
+    height: 80px;
+}
+
+.billmate_shipping_methos {
+    width: 100%;
+    float: left;
+    font-weight: bold;
+
+    margin-bottom: 30px;
+}
+
+
+.billmate_shipping_methos .ship_methods .radio + label:before {
+    content: "";
+    height: 10px;
+    width: 10px;
+    border: 3px solid #c5edf7;
+    margin-right: 10px;
+    /* margin-top: 1px; */
+    display: inline-block;
+    background-color: #c5edf7;
+    border-radius: 50%;
+    /* float: left; */
+
+    margin-top: auto;
+    float: none;
+    vertical-align: middle;
+}
+
+.billmate-checkout-price {
+    color:#7c7c7c;
+    font-weight: bold;
+    float: left;
+    margin-left: 30px;
+    /* margin-top: 8px; */
+
+    margin-top: 10px;
+}
+
+.billmate-checkout-sum{
+    margin-left: 18px;
+    color:#7c7c7c;
+    font-weight: bold;
+    float: left;
+    /* margin-top: 8px; */
+
+    margin-top: 10px;
+}
+
+
+/* Desktop */
+@media (min-width: 681px) {
+
+    .billmate-checkout-product-row .billmate-checkout-name, .billmate-checkout-sum, .billmate-checkout-price {
+        font-size: 15px;
+    }
+
+    .billmate-checkout-table-head {
+        display: -webkit-box;
+        display: -moz-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+
+        -webkit-box-direction: normal;
+        -webkit-box-orient: horizontal;
+        -moz-box-direction: normal;
+        -moz-box-orient: horizontal;
+        -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+        flex-direction: row;
+
+        -webkit-flex-flow: wrap;
+        -ms-flex-flow: wrap;
+        flex-flow: wrap;
+
+        float: none;
+    }
+
+    .billmate-checkout-cart-table .billmate-checkout-table-head .billmate-checkout-product-head {
+        width: calc(100% * 0.5);
+        margin: 0;
+        float: none;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+
+    .billmate-checkout-cart-table .billmate-checkout-table-head .billmate-checkout-price-head {
+        width: calc(100% * (110 / 720));
+        margin: 0;
+        padding: 0 15px 0 0;
+        float: none;
+        display: inline-block;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .billmate-checkout-cart-table .billmate-checkout-table-head .billmate-checkout-qty-head {
+        width: calc(100% * (100 / 720));
+        margin: 0;
+        float: none;
+        display: inline-block;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .billmate-checkout-cart-table .billmate-checkout-table-head .billmate-checkout-sum-head {
+        width: calc(100% * (150 / 720));
+        margin: 0;
+        padding: 0 25px 0 0;
+        float: none;
+        display: inline-block;
+        text-align: right;
+        box-sizing: border-box;
+    }
+
+    .billmate-checkout-product-row {
+        display: -webkit-box;
+        display: -moz-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+
+        -webkit-box-direction: normal;
+        -webkit-box-orient: horizontal;
+        -moz-box-direction: normal;
+        -moz-box-orient: horizontal;
+        -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+        flex-direction: row;
+
+        -webkit-flex-flow: wrap;
+        -ms-flex-flow: wrap;
+        flex-flow: wrap;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-img,
+    .billmate-checkout-product-row .billmate-checkout-name {
+        vertical-align: top;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-qty,
+    .billmate-checkout-product-row .billmate-checkout-price,
+    .billmate-checkout-product-row .billmate-checkout-sum,
+    .billmate-checkout-product-row .billmate-checkout-del-but {
+        vertical-align: middle;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-img {
+        /* width: 90px; */
+        width: calc(100% * 0.125);
+        margin: 0;
+        float: none;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-name {
+        /* width: 270px; */
+        width: calc(100% * 0.375);
+        margin: 0;
+        float: none;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-price {
+        /* width: 110px; */
+        width: calc(100% * (110 / 720));
+        margin: 10px 0 0;
+        padding: 0 15px 0 0;
+        float: none;
+        display: inline-block;
+        text-align: right;
+        box-sizing: border-box;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-qty {
+        width: 100px;
+        width: calc(100% * (100 / 720));
+        margin: 0;
+        float: none;
+        box-sizing: border-box;
+
+        display: -webkit-inline-box;
+        display: -moz-inline-box;
+        display: -webkit-inline-flex;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+
+        -webkit-box-direction: normal;
+        -webkit-box-orient: horizontal;
+        -moz-box-direction: normal;
+        -moz-box-orient: horizontal;
+        -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+        flex-direction: row;
+
+        -webkit-flex-flow: nowrap;
+        -ms-flex-flow: nowrap;
+        flex-flow: nowrap;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-qty .billmate-checkout-product-qty .action-sign-decr {
+        display: inline-block;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-sum {
+        /* width: 135px; */
+        width: calc(100% * (135 / 720));
+        margin: 10px 0 0;
+        padding: 0 10px 0 0;
+        float: none;
+        display: inline-block;
+        text-align: right;
+        box-sizing: border-box;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-del-but {
+        /* width: 15px; */
+        width: calc(100% * (15 / 720));
+        margin: 7px 0 0;
+        float: none;
+        display: inline-block;
+    }
+
+    .billmate-checkout-product-row .billmate-checkout-del-but .billmate-checkout-button-del {
+        display: inline-block;
+        float: none;
+        margin: 0;
+    }
+
+    .billmate-checkout-line {
+        display: none;
+    }
+}
+/* End - Fix 2020-02-28 */
