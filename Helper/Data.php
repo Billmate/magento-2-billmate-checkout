@@ -9,9 +9,8 @@ use Billmate\BillmateCheckout\Model\Payment\BillmateCheckout;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Billmate_BillmateCheckout';
-    const BM_PENDING_STATUS = 'pending';
+    const BM_PENDING_STATUS = 'billmate_pending';
     const BM_DENY_STATUS = 'canceled';
-    const BM_APPROVE_STATUS = 'processing';
 
     /**
      * @var \Magento\Quote\Model\Quote\Address\Rate
@@ -72,6 +71,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_quote = false;
 
     /**
+     * @var \Billmate\BillmateCheckout\Helper\Config
+     */
+    protected $configHelper;
+
+    /**
      * Data constructor.
      *
      * @param \Magento\Framework\App\Helper\Context      $context
@@ -83,6 +87,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param ProductMetadataInterface                   $metaData
      * @param \Magento\Quote\Model\Quote\TotalsCollector $totalsCollector
      * @param ModuleListInterface                        $moduleList
+     * @param \Billmate\BillmateCheckout\Helper\Config   $configHelper
      */
     public function __construct(
 		\Magento\Framework\App\Helper\Context $context,
@@ -93,7 +98,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\View\LayoutFactory $layoutFactory,
         ProductMetadataInterface $metaData,
         \Magento\Quote\Model\Quote\TotalsCollector $totalsCollector,
-        ModuleListInterface $moduleList
+        ModuleListInterface $moduleList,
+        \Billmate\BillmateCheckout\Helper\Config $configHelper
 	){
         $this->orderInterface = $order;
         $this->shippingRate = $shippingRate;
@@ -104,7 +110,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->layoutFactory = $layoutFactory;
         $this->totalsCollector = $totalsCollector;
         $this->_moduleList = $moduleList;
-
+        $this->configHelper = $configHelper;
         parent::__construct($context);
     }
 
@@ -484,6 +490,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApproveStatus()
     {
-        return self::BM_APPROVE_STATUS;
+        return $this->configHelper->getApproveStatus();
     }
 }

@@ -252,7 +252,7 @@ class Order
      */
     protected function getOrderState()
     {
-        return \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT;
+        return 'billmate_pending';
     }
 
     /**
