@@ -121,11 +121,11 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             ) {
                 $orderState = $this->helper->getApproveStatus();
             } elseif ($requestData['data']['status'] == 'Pending') {
-                if ($order->getStatus() == 'pending_payment') {
+                if ($order->getStatus() == 'billmate_pending') {
                     $orderState = $this->helper->getPendingStatus();
                 }
             } else {
-                if ($order->getStatus() == 'pending_payment') {
+                if ($order->getStatus() == 'billmate_pending') {
                     $orderState = $this->helper->getDenyStatus();
                 }
             }

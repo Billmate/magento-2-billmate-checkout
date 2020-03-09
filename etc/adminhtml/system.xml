@@ -58,6 +58,10 @@
 						<comment><![CDATA[Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout.]]></comment>
 						<source_model>Billmate\BillmateCheckout\Model\Config\Source\Business</source_model>
 					</field>
+					<field id="acceptstatus" translate="label" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="1">
+						<label>Accept Status</label>
+						<source_model>Billmate\BillmateCheckout\Model\Config\Source\AcceptStatus</source_model>
+					</field>
 				</group>
 				<group id="credentials" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Credentials</label>

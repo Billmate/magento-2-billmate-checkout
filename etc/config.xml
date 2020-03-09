@@ -59,7 +59,7 @@
                 <model>Billmate\BillmateCheckout\Model\Payment\BillmateCheckout</model>
                 <active>1</active>
                 <title>Billmate Checkout</title>
-                <order_status>pending_payment</order_status>
+                <order_status>billmate_pending</order_status>
             </billmate_checkout>
         </payment>
     </default>
