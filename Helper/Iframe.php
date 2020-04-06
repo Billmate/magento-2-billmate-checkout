@@ -167,7 +167,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
                 'quantity' => $item->getQty(),
                 'artnr' => $item->getSku(),
                 'title' => $item->getName(),
-                'aprice' => $this->toCents($item->getPriceInclTax()),
+                'aprice' => $this->toCents($item->getPriceInclTax()/(1+$item->getTaxPercent()/100)),
                 'taxrate' => $item->getTaxPercent(),
                 'discount' => ($item->getDiscountPercent()),
                 'withouttax' => $this->toCents($item->getRowTotal())
