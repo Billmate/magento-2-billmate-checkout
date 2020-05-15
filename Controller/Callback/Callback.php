@@ -57,7 +57,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
      * @var \Billmate\BillmateCheckout\Model\Order
      */
     protected $orderModel;
-	
+
 	public function __construct(
 	    Context $context,
         PageFactory $resultPageFactory,
@@ -84,7 +84,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
 
 		parent::__construct($context);
 	}
-	
+
 	public function execute()
     {
         $jsonResponse = $this->resultJsonFactory->create();
@@ -132,7 +132,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             if ($orderState != "") {
                 $order->setState($orderState)->setStatus($orderState);
                 $order->save();
-                $respMessage = _('Order status successfully updated.');
+                $respMessage = __('Order status successfully updated.');
             }
 
         } catch(\Exception $exception) {
