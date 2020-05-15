@@ -168,13 +168,27 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
                 'artnr' => $item->getSku(),
                 'title' => $item->getName(),
                 'aprice' => $this->toCents($item->getPriceInclTax()/(1+$item->getTaxPercent()/100)),
-                'taxrate' => $item->getTaxPercent(),
+                'taxrate' => $this->calculateItemRate($item),
                 'discount' => ($item->getDiscountPercent()),
                 'withouttax' => $this->toCents($item->getRowTotal())
             ];
         }
 
         return $itemsData;
+    }
+
+    /**
+     * @param $item
+     *
+     * @return float|int
+     */
+    protected function calculateItemRate($item)
+    {
+        $itemTaxRate = $item->getTaxPercent();
+        if ($itemTaxRate) {
+           return $itemTaxRate;
+        }
+        return round(($item->getRowTotalInclTax()/$item->getRowTotal()*100)-100,2);
     }
 
     /**
