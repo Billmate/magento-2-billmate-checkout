@@ -190,6 +190,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'postcode' => $shippingData['postcode'],
             'telephone' => $shippingData['telephone'],
             'email' => $shippingData['email'],
+            'company' => $shippingData['company'],
         ];
 
         $this->getQuote()->getBillingAddress()->addData($billingAddress);
@@ -215,6 +216,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $shippingData['lastname'] = $this->correctSymbols($shippingData['lastname']);
         $shippingData['street'] = $this->correctSymbols($shippingData['street']);
         $shippingData['city'] = $this->correctSymbols($shippingData['city']);
+        $shippingData['company'] = $this->correctSymbols($shippingData['company']);
 
         return $shippingData;
     }
