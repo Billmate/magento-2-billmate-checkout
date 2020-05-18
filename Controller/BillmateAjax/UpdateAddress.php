@@ -36,11 +36,11 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
      * @param \Magento\Sales\Api\Data\OrderInterface           $order
      * @param \Billmate\BillmateCheckout\Helper\Iframe         $iframeHelper
      */
-	public function __construct(Context $context, 
+	public function __construct(Context $context,
 		PageFactory $resultPageFactory,
 		\Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-		\Magento\Catalog\Api\ProductRepositoryInterface $productRepository, 
-		\Billmate\BillmateCheckout\Helper\Data $_helper, 
+		\Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+		\Billmate\BillmateCheckout\Helper\Data $_helper,
 		\Magento\Sales\Api\Data\OrderInterface $order,
         \Billmate\BillmateCheckout\Helper\Iframe $iframeHelper
 		){
@@ -108,7 +108,8 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
                 'city' => $customerAddress['Billing']['city'],
                 'country_id' => $customerAddress['Billing']['country'],
                 'postcode' => $customerAddress['Billing']['zip'],
-                'telephone' => $customerAddress['Billing']['phone']
+                'telephone' => $customerAddress['Billing']['phone'],
+                'company' => $customerAddress['Billing']['company']??''
             ];
         } elseif ($billingAddress) {
             $emailRequested = $this->getRequest()->getParam('email','');
@@ -121,7 +122,8 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
                 'city' => $billingAddress['city'],
                 'country_id' => $billingAddress['country'],
                 'postcode' => $billingAddress['zip'],
-                'telephone' => $billingAddress['phone']
+                'telephone' => $billingAddress['phone'],
+                'company' => $billingAddress['company']??''
             ];
         }
 
@@ -148,7 +150,8 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
                 'street'=> $shippingAddress['street'],
                 'city'=> $shippingAddress['city'],
                 'country_id'=>$country,
-                'postcode'=> $shippingAddress['zip']
+                'postcode'=> $shippingAddress['zip'],
+                'company'=> $shippingAddress['company']??''
             ];
         } elseif ($customerAddress) {
             if (isset($customerAddress['street'])) {
@@ -158,7 +161,8 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
                     'street'=> $customerAddress['Shipping']['street'],
                     'city'=> $customerAddress['Shipping']['city'],
                     'country_id'=> $customerAddress['Shipping']['country'],
-                    'postcode'=> $customerAddress['Shipping']['zip']
+                    'postcode'=> $customerAddress['Shipping']['zip'],
+                    'company'=> $customerAddress['Shipping']['company']??''
                 ];
             }
         }
