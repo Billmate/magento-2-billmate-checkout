@@ -66,6 +66,11 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
     protected $billmateProvider;
 
     /**
+     * @var string
+     */
+    protected $_infoBlockType = \Billmate\BillmateCheckout\Block\Info::class;
+
+    /**
      * BillmateCheckout constructor.
      *
      * @param \Magento\Framework\Model\Context                             $context
