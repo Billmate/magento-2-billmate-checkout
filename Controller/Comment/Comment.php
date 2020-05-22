@@ -2,9 +2,15 @@
 
 namespace Billmate\BillmateCheckout\Controller\Comment;
 
+/**
+ * Class Comment
+ * @package Billmate\BillmateCheckout\Controller\Comment
+ */
 class Comment extends \Magento\Framework\App\Action\Action
 {
-
+    /**
+     * @var \Magento\Checkout\Model\Cart
+     */
     protected $cart;
 
     /**
@@ -26,11 +32,18 @@ class Comment extends \Magento\Framework\App\Action\Action
      *
      * @return \Magento\Framework\Controller\ResultInterface
      */
-    public function execute(){
+    public function execute()
+    {
+       $comment = $this->getRequest()->getParam('comment');
         try {
-            $quote = $this->cart->getQuote();
-            $quote->setData('order_comment',$_POST['comment']);
-            $quote->save();
+            if ($comment) {
+                $quote = $this->cart->getQuote();
+                $quote->setData(
+                    'order_comment',
+                    $comment
+                );
+                $quote->save();
+            }
         }
         catch (\Exception $e){}
     }
