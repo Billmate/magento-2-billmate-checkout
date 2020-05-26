@@ -224,6 +224,14 @@ class Content extends \Magento\Checkout\Block\Onepage
     }
 
     /**
+     * @return bool
+     */
+    public function isCommentsEnabled()
+    {
+       return $this->configHelper->isCommentsEnabled();
+    }
+
+    /**
      * @param $item
      *
      * @return mixed

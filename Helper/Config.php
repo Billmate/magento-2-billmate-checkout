@@ -2,19 +2,35 @@
 
 namespace Billmate\BillmateCheckout\Helper;
 
+/**
+ * Class Config
+ * @package Billmate\BillmateCheckout\Helper
+ */
 class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const XML_PATH_GENERAL_ENABLE = 'payment/billmate_checkout/general/enable';
+
     const XML_PATH_GENERAL_PUSHORDEREVENTS = 'payment/billmate_checkout/general/pushorderevents';
+
     const XML_PATH_GENERAL_BTN = 'payment/billmate_checkout/general/inc_dec_btns';
+
     const XML_PATH_GENERAL_ATTRIBUTES = 'payment/billmate_checkout/general/show_attributes_cart';
+
     const XML_PATH_GENERAL_TERMS_URL = 'payment/billmate_checkout/general/terms_url';
+
     const XML_PATH_GENERAL_PP_URL = 'payment/billmate_checkout/general/privacy_policy_url';
+
     const XML_PATH_CREDENTIALS_ID = 'payment/billmate_checkout/credentials/billmate_id';
+
     const XML_PATH_CREDENTIALS_KEY = 'payment/billmate_checkout/credentials/billmate_key';
+
     const XML_PATH_GENERAL_TESTMODE = 'payment/billmate_checkout/general/testmode';
+
     const XML_PATH_CHECKOUT_MODE = 'payment/billmate_checkout/general/billmate_checkout_mode';
+
     const XML_PATH_APPROVE_STATUS = 'payment/billmate_checkout/general/acceptstatus';
+
+    const XML_PATH_ORDER_COMMENTS = 'payment/billmate_checkout/general/ordercomments';
 
     /**
      * @param $config_path
@@ -86,11 +102,19 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getShowAttribute()
     {
         return (bool)$this->getConfig(self::XML_PATH_GENERAL_ATTRIBUTES);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCommentsEnabled()
+    {
+        return (bool)$this->getConfig(self::XML_PATH_ORDER_COMMENTS);
     }
 
     /**
