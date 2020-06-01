@@ -19,7 +19,7 @@
             "registration.php"
         ],
         "psr-4": {
-            "Billmate\\BillmateCheckout\\": "BillmateCheckout"
+            "Billmate\\BillmateCheckout\\": ""
         }
     }
 }
