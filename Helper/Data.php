@@ -216,7 +216,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $shippingData['lastname'] = $this->correctSymbols($shippingData['lastname']);
         $shippingData['street'] = $this->correctSymbols($shippingData['street']);
         $shippingData['city'] = $this->correctSymbols($shippingData['city']);
-        $shippingData['company'] = $this->correctSymbols($shippingData['company']);
+        $shippingData['company'] = (isset($shippingData['company'])) ? $this->correctSymbols($shippingData['company']) : '';
 
         return $shippingData;
     }
