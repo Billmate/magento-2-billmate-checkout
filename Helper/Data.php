@@ -353,15 +353,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $this->totalsCollector->collectAddressTotals($quote, $shippingAddress);
         $shippingRates = $shippingAddress->getGroupedAllShippingRates();
+        $defShippingMethodCode = $this->configHelper->getDefaultShippingMethod();
+
         foreach ($shippingRates as $carrierRates) {
             foreach ($carrierRates as $rate) {
-                $methods[] = $rate;
+                $methods[$rate->getCode()] = $rate;
             }
         }
 
         if (!$shippingAddress->getShippingMethod() && $methods) {
-            $rate = current($methods);
-            $this->setShippingMethod($rate->getCode());
+
+            if (isset($methods[$defShippingMethodCode])) {
+                $methods[$defShippingMethodCode];
+                $this->setShippingMethod($defShippingMethodCode);
+            } else {
+                $rate = current($methods);
+                $this->setShippingMethod($rate->getCode());
+            }
         }
 
         return $methods;
@@ -405,10 +413,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isActiveShippingMethod($methodCode)
     {
+        $activeMethod = $this->getActiveMethod();
+        return  $activeMethod == $methodCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getActiveMethod()
+    {
         $activeMethod = $this->getQuote()
             ->getShippingAddress()
             ->getShippingMethod();
-        return  $activeMethod == $methodCode;
+        if (!$activeMethod) {
+           return $this->configHelper->getDefaultShippingMethod();
+        }
+        return $activeMethod;
     }
 
     /**
