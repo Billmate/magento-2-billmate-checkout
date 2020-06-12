@@ -130,6 +130,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         $data = $this->getRequestData();
 
         $itemsData = $this->getItemsData();
+
         $data['Articles'] = array_merge($data['Articles'], $itemsData);
 
         $shippingAddressTotal = $this->getQuote()->getShippingAddress();
@@ -140,6 +141,8 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
                 'withouttax' => $this->toCents($shippingAddressTotal->getShippingAmount()),
                 'taxrate' => $shippingTaxRate,
                 'withtax' => $this->toCents($shippingAddressTotal->getShippingInclTax()),
+                'method' => $shippingAddressTotal->getShippingDescription(),
+                'method_code' => $shippingAddressTotal->getShippingMethod()
             ],
             'Total' => [
                 'withouttax' => $this->toCents($shippingAddressTotal->getGrandTotal()
@@ -211,6 +214,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
     protected function getRequestData()
     {
         $data = [];
+        $data['Articles'] = [];
         $data['PaymentData'] = [
             'currency' => 'SEK',
             'language' => 'sv',
@@ -247,19 +251,6 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         $shippingAddressTotal = $this->getQuote()->getShippingAddress();
-        $data['Articles'] = [
-            [
-                'quantity' => '1',
-                'artnr' => 'shipping_code',
-                'title' => $shippingAddressTotal->getShippingMethod(),
-                'aprice' => '0',
-                'taxrate' => '0',
-                'discount' => '0',
-                'withouttax' => '0'
-
-            ]
-        ];
-
         $discountAmount = $shippingAddressTotal->getDiscountAmount();
         if ($discountAmount) {
             $data['Articles'][] = [
