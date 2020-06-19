@@ -317,7 +317,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function priceToCents($price)
     {
-        return $price * 100;
+        return ceil($price * 100);
     }
 
     /**

@@ -134,6 +134,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
 
         $shippingAddressTotal = $this->getQuote()->getShippingAddress();
         $shippingTaxRate = $this->getShippingTaxRate();
+        $invoiceFeeHandling = $this->getInvoiceFeeHandling();
 
         $data['Cart'] = [
             'Shipping' => [
@@ -141,12 +142,25 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
                 'taxrate' => $shippingTaxRate,
                 'withtax' => $this->toCents($shippingAddressTotal->getShippingInclTax()),
             ],
+            'Handling' => [
+                'withouttax' => $this->toCents($invoiceFeeHandling['amount']),
+                'taxrate'    => $invoiceFeeHandling['rate']
+            ],
             'Total' => [
                 'withouttax' => $this->toCents($shippingAddressTotal->getGrandTotal()
-                    - $shippingAddressTotal->getTaxAmount() - $shippingAddressTotal->getDiscountTaxCompensationAmount()),
-                'tax' => $this->toCents($shippingAddressTotal->getTaxAmount() + $shippingAddressTotal->getDiscountTaxCompensationAmount()),
+                    - $shippingAddressTotal->getTaxAmount() - $shippingAddressTotal->getDiscountTaxCompensationAmount()
+                    + $invoiceFeeHandling['amount']
+                ),
+                'tax' => $this->toCents(
+                    $shippingAddressTotal->getTaxAmount() + $shippingAddressTotal->getDiscountTaxCompensationAmount()
+                    + $invoiceFeeHandling['tax_amount']
+                ),
                 'rounding' => $this->toCents(0),
-                'withtax' => $this->toCents($shippingAddressTotal->getGrandTotal()),
+                'withtax' => $this->toCents(
+                    $shippingAddressTotal->getGrandTotal()
+                    + $invoiceFeeHandling['tax_amount']
+                    + $invoiceFeeHandling['amount']
+                ),
             ]
         ];
 
@@ -279,6 +293,27 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @return mixed
+     */
+    protected function getInvoiceFeeHandling()
+    {
+        $invoiceFeeHandling['amount'] = 0;
+        $invoiceFeeHandling['tax_amount'] = 0;
+        $invoiceFeeHandling['rate'] = 0;
+
+        $invoiceFee = $this->configHelper->getInvoiceFee();
+        if ($invoiceFee) {
+            $invoiceFeeTax = $this->configHelper->getInvoiceTaxClass();
+            $invoiceFeeRate =  $this->getTaxRate($invoiceFeeTax);
+
+            $invoiceFeeHandling['amount'] = $invoiceFee;
+            $invoiceFeeHandling['tax_amount'] = (($invoiceFeeTax) * ($invoiceFeeRate / 100));
+            $invoiceFeeHandling['rate'] = $invoiceFeeRate;
+        }
+        return $invoiceFeeHandling;
+    }
+
+    /**
      * @return int | null
      */
     protected function getBillmateCheckoutId()
@@ -360,11 +395,25 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected function getShippingTaxRate()
     {
+        $shippingTaxClass = $this->configHelper->getShippingTaxClass();
+        return $this->getTaxRate($shippingTaxClass);
+    }
+
+    protected function getTaxRate($taxClassId)
+    {
         $currentStore = $this->_storeManager->getStore();
         $currentStoreId = $currentStore->getId();
         $taxCalculation = $this->getTaxCalculation();
-        $request = $taxCalculation->getRateRequest(null, null, null, $currentStoreId);
-        $shippingTaxClass = $this->configHelper->getShippingTaxClass();
-        return $taxCalculation->getRate($request->setProductClassId($shippingTaxClass));
+        $request = $taxCalculation->getRateRequest(
+            null,
+            null,
+            null,
+            $currentStoreId
+        );
+
+        return $taxCalculation->getRate(
+            $request->setProductClassId($taxClassId)
+        );
     }
+
 }
