@@ -3,4 +3,7 @@
     <event name="checkout_onepage_controller_success_action">
         <observer instance="Billmate\BillmateCheckout\Observer\SaveData" name="billmate_ordercomments_save_data"/>
     </event>
+    <event name="sales_model_service_quote_submit_before">
+        <observer name="bm_invoice_fee_state" instance="Billmate\BillmateCheckout\Observer\AddInvoiceFee" />
+    </event>
 </config>

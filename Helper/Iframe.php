@@ -1,7 +1,10 @@
 <?php
-
 namespace Billmate\BillmateCheckout\Helper;
 
+/**
+ * Class Iframe
+ * @package Billmate\BillmateCheckout\Helper
+ */
 class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
@@ -53,16 +56,22 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
     ];
 
     /**
+     * @var \Billmate\BillmateCheckout\Model\Payment\Handling\Invoice
+     */
+    private $bmInvoiceHandler;
+
+    /**
      * Iframe constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context      $context
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Quote\Model\Quote\Address\Rate    $shippingRate
-     * @param \Magento\Checkout\Model\Session            $_checkoutSession
-     * @param Config                                     $configHelper
-     * @param Data                                       $dataHelper
-     * @param \Billmate\BillmateCheckout\Model\Api\Billmate          $billmateProvider
-     * @param \Magento\Tax\Model\CalculationFactory      $taxCalculation
+     * @param \Magento\Framework\App\Helper\Context                     $context
+     * @param \Magento\Store\Model\StoreManagerInterface                $storeManager
+     * @param \Magento\Quote\Model\Quote\Address\Rate                   $shippingRate
+     * @param \Magento\Checkout\Model\Session                           $_checkoutSession
+     * @param Config                                                    $configHelper
+     * @param Data                                                      $dataHelper
+     * @param \Billmate\BillmateCheckout\Model\Api\Billmate             $billmateProvider
+     * @param \Magento\Tax\Model\CalculationFactory                     $taxCalculation
+     * @param \Billmate\BillmateCheckout\Model\Payment\Handling\Invoice $bmInvoiceHandler
      */
     public function __construct(
 		\Magento\Framework\App\Helper\Context $context,
@@ -72,7 +81,8 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         \Billmate\BillmateCheckout\Helper\Config $configHelper,
         \Billmate\BillmateCheckout\Helper\Data $dataHelper,
         \Billmate\BillmateCheckout\Model\Api\Billmate $billmateProvider,
-        \Magento\Tax\Model\CalculationFactory $taxCalculation
+        \Magento\Tax\Model\CalculationFactory $taxCalculation,
+        \Billmate\BillmateCheckout\Model\Payment\Handling\Invoice $bmInvoiceHandler
 	){
         $this->_storeManager = $storeManager;
         $this->shippingRate = $shippingRate;
@@ -81,8 +91,10 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         $this->configHelper = $configHelper;
         $this->dataHelper = $dataHelper;
         $this->taxCalculation = $taxCalculation;
+        $this->bmInvoiceHandler = $bmInvoiceHandler;
 
         parent::__construct($context);
+
     }
 
     /**
@@ -286,22 +298,9 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @return mixed
      */
-    protected function getInvoiceFeeHandling()
+    public function getInvoiceFeeHandling()
     {
-        $invoiceFeeHandling['amount'] = 0;
-        $invoiceFeeHandling['tax_amount'] = 0;
-        $invoiceFeeHandling['rate'] = 0;
-
-        $invoiceFee = $this->configHelper->getInvoiceFee();
-        if ($invoiceFee) {
-            $invoiceFeeTax = $this->configHelper->getInvoiceTaxClass();
-            $invoiceFeeRate =  $this->getTaxRate($invoiceFeeTax);
-
-            $invoiceFeeHandling['amount'] = $invoiceFee;
-            $invoiceFeeHandling['tax_amount'] = (($invoiceFeeTax) * ($invoiceFeeRate / 100));
-            $invoiceFeeHandling['rate'] = $invoiceFeeRate;
-        }
-        return $invoiceFeeHandling;
+        return $this->bmInvoiceHandler->getFeeData();
     }
 
     /**
@@ -407,4 +406,11 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    /**
+     * @return Config
+     */
+    public function getConfigHelper(): Config
+    {
+        return $this->configHelper;
+    }
 }

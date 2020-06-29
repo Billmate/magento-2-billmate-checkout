@@ -5,6 +5,8 @@ class Order
 {
     const BM_ADDITIONAL_INFO_CODE = 'bm_payment_method';
 
+    const BM_ADDITIONAL_PAYMENT_CODE = 'payment_method_bm_code';
+
     /**
      * @var array
      */
@@ -106,7 +108,7 @@ class Order
             if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
                 $this->orderSender->send($order);
             }
-            
+
             $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
 
             $orderState = $this->getOrderState();
@@ -171,23 +173,27 @@ class Order
         $shippingAddress->setCollectShippingRates(true)
             ->collectShippingRates()
             ->setShippingMethod($shippingCode);
+        $orderData = $this->getOrderData();
+
         $actual_quote->getShippingAddress()->addShippingRate($this->shippingRate);
         $actual_quote->setPaymentMethod($billmatePaymentMethod);
         $actual_quote->getPayment()->setQuote($actual_quote);
         $actual_quote->getPayment()->importData([
-            'method' => $billmatePaymentMethod,
+            'method' => $billmatePaymentMethod
         ]);
 
 
-        $orderData = $this->getOrderData();
+
         if (isset($orderData['payment_method_name'])) {
             $actual_quote->getPayment()->setAdditionalInformation(
                 self::BM_ADDITIONAL_INFO_CODE, $orderData['payment_method_name']
             );
+            $actual_quote->getPayment()->setAdditionalInformation(
+                self::BM_ADDITIONAL_PAYMENT_CODE, $orderData['payment_method_bm_code']
+            );
         }
 
         $actual_quote->setReservedOrderId($orderId);
-        $actual_quote->collectTotals();
         $actual_quote->save();
         return $actual_quote;
     }
