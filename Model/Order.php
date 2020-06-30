@@ -1,11 +1,17 @@
 <?php
 namespace Billmate\BillmateCheckout\Model;
 
+/**
+ * Class Order
+ * @package Billmate\BillmateCheckout\Model
+ */
 class Order
 {
     const BM_ADDITIONAL_INFO_CODE = 'bm_payment_method';
 
     const BM_ADDITIONAL_PAYMENT_CODE = 'payment_method_bm_code';
+
+    const BM_INVOICE_ID_FIELD = 'billmate_invoice_id';
 
     /**
      * @var array

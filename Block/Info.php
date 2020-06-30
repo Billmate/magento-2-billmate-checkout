@@ -23,4 +23,15 @@ class Info extends \Magento\Payment\Block\Info
 
         return '';
     }
+
+    /**
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getBmInvoiceId()
+    {
+        return $this->getInfo()->getOrder()->getData(
+            BillmateOrder::BM_INVOICE_ID_FIELD
+        );
+    }
 }
