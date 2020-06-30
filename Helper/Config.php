@@ -164,11 +164,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @return string
+     * @return float
      */
     public function getInvoiceFee()
     {
-        return $this->getConfig(self::XML_PATH_INVOICE_FEE);
+        return (float)$this->getConfig(self::XML_PATH_INVOICE_FEE);
     }
 
     /**

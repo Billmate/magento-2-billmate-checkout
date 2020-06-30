@@ -53,6 +53,7 @@
                     <field id="invoice_fee" translate="label comment" type="text" sortOrder="48" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Invoice Fee</label>
                         <comment>Set fee for billmate invoice method</comment>
+                        <validate>validate-number validate-zero-or-greater</validate>
                     </field>
                     <field id="invoice_fee_tax" translate="label comment" type="select" sortOrder="49" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Invoice fee tax class</label>
