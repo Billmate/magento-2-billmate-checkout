@@ -1,9 +1,15 @@
 <?php
 namespace Billmate\BillmateCheckout\Model;
 
+/**
+ * Class Order
+ * @package Billmate\BillmateCheckout\Model
+ */
 class Order
 {
     const BM_ADDITIONAL_INFO_CODE = 'bm_payment_method';
+
+    const BM_INVOICE_ID_FIELD = 'billmate_invoice_id';
 
     /**
      * @var array
@@ -106,7 +112,7 @@ class Order
             if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
                 $this->orderSender->send($order);
             }
-            
+
             $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
 
             $orderState = $this->getOrderState();
