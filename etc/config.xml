@@ -55,6 +55,8 @@
                     <show_attributes_cart>1</show_attributes_cart>
                     <inc_dec_btns>1</inc_dec_btns>
                     <default_shipping>freeshipping_freeshipping</default_shipping>
+                    <invoice_fee>0</invoice_fee>
+                    <invoice_fee_tax>0</invoice_fee_tax>
                 </general>
                 <payment_action>capture</payment_action>
                 <model>Billmate\BillmateCheckout\Model\Payment\BillmateCheckout</model>

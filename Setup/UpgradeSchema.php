@@ -47,7 +47,76 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
         }
+
+        if (version_compare($context->getVersion(), '1.6.12','<')) {
+            $this->addInvoiceFeeRows($setup);
+        }
+
+
         $setup->endSetup();
     }
+
+    protected function addInvoiceFeeRows($setup)
+    {
+        $quoteTable = 'quote';
+        $orderTable = 'sales_order';
+        $invoiceTable = 'sales_invoice';
+        $creditmemoTable = 'sales_creditmemo';
+
+        $setup->getConnection()
+            ->addColumn(
+                $setup->getTable($quoteTable),
+                'bm_invoice_fee',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length'=>'10,2',
+                    'default' => 0.00,
+                    'nullable' => true,
+                    'comment' =>'Billmate invoice fee'
+
+                ]
+            );
+
+        $setup->getConnection()
+            ->addColumn(
+                $setup->getTable($orderTable),
+                'bm_invoice_fee',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length'=>'10,2',
+                    'default' => 0.00,
+                    'nullable' => true,
+                    'comment' =>'Billmate invoice fee'
+
+                ]
+            );
+
+        $setup->getConnection()
+            ->addColumn(
+                $setup->getTable($invoiceTable),
+                'bm_invoice_fee',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length'=>'10,2',
+                    'default' => 0.00,
+                    'nullable' => true,
+                    'comment' =>'Billmate invoice fee'
+
+                ]
+            );
+
+        $setup->getConnection()
+            ->addColumn(
+                $setup->getTable($creditmemoTable),
+                'bm_invoice_fee',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length'=>'10,2',
+                    'default' => 0.00,
+                    'nullable' => true,
+                    'comment' =>'Billmate invoice fee'
+
+                ]
+            );
+    }
 }
-?>

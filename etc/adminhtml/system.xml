@@ -50,6 +50,16 @@
                         <comment><![CDATA[Set default shipping method.]]></comment>
                         <source_model>Magento\Shipping\Model\Config\Source\Allmethods</source_model>
                     </field>
+                    <field id="invoice_fee" translate="label comment" type="text" sortOrder="48" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Invoice Fee</label>
+                        <comment>Set fee for billmate invoice method</comment>
+                        <validate>validate-number validate-zero-or-greater</validate>
+                    </field>
+                    <field id="invoice_fee_tax" translate="label comment" type="select" sortOrder="49" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Invoice fee tax class</label>
+                        <comment>Select the tax class to be used for the invoice fee.</comment>
+                        <source_model>Billmate\BillmateCheckout\Model\Config\Source\TaxClasses</source_model>
+                    </field>
 					<field id="terms_url" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
 						<label>Store Terms</label>
 						<comment>Put here full URL to terms and conditions</comment>

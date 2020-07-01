@@ -30,6 +30,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
     const XML_PATH_DEFAULT_SHIPPING = 'payment/billmate_checkout/general/default_shipping';
 
+    const XML_PATH_INVOICE_FEE = 'payment/billmate_checkout/general/invoice_fee';
+
+    const XML_PATH_INVOICE_FEE_TAX = 'payment/billmate_checkout/general/invoice_fee_tax';
+
     const XML_PATH_APPROVE_STATUS = 'payment/billmate_checkout/general/acceptstatus';
 
     const XML_PATH_ORDER_COMMENTS = 'payment/billmate_checkout/general/ordercomments';
@@ -157,5 +161,21 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public function getDefaultShippingMethod()
     {
         return $this->getConfig(self::XML_PATH_DEFAULT_SHIPPING);
+    }
+
+    /**
+     * @return float
+     */
+    public function getInvoiceFee()
+    {
+        return (float)$this->getConfig(self::XML_PATH_INVOICE_FEE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getInvoiceTaxClass()
+    {
+        return $this->getConfig(self::XML_PATH_INVOICE_FEE_TAX);
     }
 }

@@ -1,11 +1,10 @@
 <?php
-
 namespace Billmate\BillmateCheckout\Model\Payment;
 
 /**
- * Pay In Store payment method model
+ * Class BillmateCheckout
+ * @package Billmate\BillmateCheckout\Model\Payment
  */
-
 class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
 
     const PAYMENT_CODE_CHECKOUT = 'billmate_checkout';
