@@ -25,6 +25,11 @@ $bmInvoiceId = $block->getBmInvoiceId();
         </dd>
     <?php endif;?>
 </dl>
+<?php if ($block->isTestPayment()): ?>
+    <div class="admin__field-error">
+        <b><?= __('TEST PAYMENT') ?></b>
+    </div>
+<?php endif; ?>
 <?= $block->getChildHtml() ?>
 <div class="payment-method-description">
     <div class="order-payment-method-title">
@@ -36,5 +41,4 @@ $bmInvoiceId = $block->getBmInvoiceId();
         </div>
     <?php endif; ?>
 </div>
-
 

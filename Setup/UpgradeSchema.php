@@ -1,6 +1,7 @@
 <?php
 namespace Billmate\BillmateCheckout\Setup;
 
+use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
@@ -52,6 +53,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addInvoiceFeeRows($setup);
         }
 
+        if (version_compare($context->getVersion(), '1.6.13','<')) {
+            $this->addTestPaymentSource($setup);
+        }
 
         $setup->endSetup();
     }
@@ -115,6 +119,23 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Billmate invoice fee'
+
+                ]
+            );
+    }
+
+    protected function addTestPaymentSource($setup)
+    {
+        $setup->getConnection()
+            ->addColumn(
+                $setup->getTable('sales_order'),
+                'bm_test_mode',
+                [
+                    'type' => Table::TYPE_INTEGER,
+                    'length' => '1',
+                    'nullable' => false,
+                    'default' => 0,
+                    'comment' =>'Billmate Test Mode'
 
                 ]
             );

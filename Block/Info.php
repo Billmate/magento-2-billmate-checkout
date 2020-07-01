@@ -34,4 +34,17 @@ class Info extends \Magento\Payment\Block\Info
             BillmateOrder::BM_INVOICE_ID_FIELD
         );
     }
+
+    /**
+     * @return bool
+     */
+    public function isTestPayment()
+    {
+        $order = $this->getInfo()->getOrder();
+        if ($order) {
+            return (bool)$order->getData(BillmateOrder::BM_TEST_MODE_FLAG);
+        }
+
+        return false;
+    }
 }
