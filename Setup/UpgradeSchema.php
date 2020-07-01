@@ -53,7 +53,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addInvoiceFeeRows($setup);
         }
 
-        if (version_compare($context->getVersion(), '1.6.13','<')) {
+        if (version_compare($context->getVersion(), '1.6.14','<')) {
             $this->addTestPaymentSource($setup);
         }
 
