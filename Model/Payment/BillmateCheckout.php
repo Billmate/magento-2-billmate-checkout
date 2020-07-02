@@ -1,6 +1,8 @@
 <?php
 namespace Billmate\BillmateCheckout\Model\Payment;
 
+use Billmate\BillmateCheckout\Model\Order as BillmateOrder;
+
 /**
  * Class BillmateCheckout
  * @package Billmate\BillmateCheckout\Model\Payment
@@ -139,7 +141,7 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
 
         $billmateConnection->activatePayment($bmRequestData);
 
-        $payment->setTransactionId($order->getData('billmate_invoice_id'));
+        $payment->setTransactionId($order->getData(BillmateOrder::BM_INVOICE_ID_FIELD));
         $payment->setParentTransactionId($payment->getTransactionId());
         $transaction = $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_AUTH, null, true, "");
         $transaction->setIsClosed(true);
@@ -214,9 +216,9 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
     protected function getBillmateRequestData($order)
     {
         $bmRequestData = [];
-        if (!empty($order->getData('billmate_invoice_id'))) {
+        if (!empty($order->getData(BillmateOrder::BM_INVOICE_ID_FIELD))) {
             $bmRequestData["PaymentData"] = [
-                "number" => $order->getData('billmate_invoice_id')
+                "number" => $order->getData(BillmateOrder::BM_INVOICE_ID_FIELD)
             ];
             return $bmRequestData;
         }

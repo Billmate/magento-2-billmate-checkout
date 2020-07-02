@@ -1,11 +1,21 @@
 <?php
 namespace Billmate\BillmateCheckout\Model;
 
+/**
+ * Class Order
+ * @package Billmate\BillmateCheckout\Model
+ */
 class Order
 {
     const BM_ADDITIONAL_INFO_CODE = 'bm_payment_method';
 
     const BM_ADDITIONAL_PAYMENT_CODE = 'payment_method_bm_code';
+
+    const BM_INVOICE_ID_FIELD = 'billmate_invoice_id';
+
+    const BM_TEST_MODE_FLAG = 'bm_test_mode';
+
+    const BM_TEST_MODE_VALUE = 1;
 
     /**
      * @var array
@@ -113,6 +123,13 @@ class Order
 
             $orderState = $this->getOrderState();
             $order->setState($orderState)->setStatus($orderState);
+            if ($this->dataHelper->getConfigHelper()->getTestMode()) {
+                $order->setData(
+                    self::BM_TEST_MODE_FLAG,
+                    self::BM_TEST_MODE_VALUE
+                );
+            }
+
             $order->save();
 
             return $orderId;

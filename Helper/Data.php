@@ -514,4 +514,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->configHelper->getApproveStatus();
     }
+
+    /**
+     * @return Config
+     */
+    public function getConfigHelper(): Config
+    {
+        return $this->configHelper;
+    }
 }

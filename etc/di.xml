@@ -16,4 +16,11 @@
             </argument>
         </arguments>
     </type>
+    <virtualType name="Magento\Sales\Model\ResourceModel\Order\Grid">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="bm_test_mode" xsi:type="string">sales_order.bm_test_mode</item>
+            </argument>
+        </arguments>
+    </virtualType>
 </config>

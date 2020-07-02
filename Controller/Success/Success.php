@@ -3,6 +3,8 @@ namespace Billmate\BillmateCheckout\Controller\Success;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\App\Action\Context;
 use \Magento\Checkout\Model\Session as CheckoutSession;
+use Billmate\BillmateCheckout\Model\Order as BillmateOrder;
+
 class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
 {
 
@@ -42,12 +44,12 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
     protected $billmateProvider;
 
     protected $quoteFactory;
-	
+
 	public function __construct(
 		Context $context,
 		PageFactory $resultPageFactory,
 		\Magento\Framework\Event\Manager $eventManager,
-		\Billmate\BillmateCheckout\Helper\Data $_helper, 
+		\Billmate\BillmateCheckout\Helper\Data $_helper,
 		CheckoutSession $checkoutSession,
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Registry $registry,
@@ -68,7 +70,7 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
         $this->billmateProvider = $billmateProvider;
 		parent::__construct($context);
 	}
-	
+
 	public function execute()
     {
         $this->helper->setSessionData('billmate_checkout_id',null);
@@ -103,7 +105,7 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
             $this->registry->register('bm-inc-id', $this->helper->getSessionData('bm-inc-id'));
 			$orderId = $order->getId();
 
-            $order->setData('billmate_invoice_id', $requestData['data']['number']);
+            $order->setData(BillmateOrder::BM_INVOICE_ID_FIELD, $requestData['data']['number']);
             $order->save();
 
 			$this->eventManager->dispatch(
