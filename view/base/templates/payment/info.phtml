@@ -5,6 +5,7 @@
  */
 $specificInfo = $block->getSpecificInformation();
 $title = $block->escapeHtml($block->getMethod()->getTitle());
+$bmInvoiceId = $block->getBmInvoiceId();
 ?>
 <dl class="payment-method">
     <dt class="title"><?= /* @noEscape */ $title ?></dt>
@@ -24,9 +25,20 @@ $title = $block->escapeHtml($block->getMethod()->getTitle());
         </dd>
     <?php endif;?>
 </dl>
+<?php if ($block->isTestPayment()): ?>
+    <div class="admin__field-error">
+        <b><?= __('TEST PAYMENT') ?></b>
+    </div>
+<?php endif; ?>
 <?= $block->getChildHtml() ?>
 <div class="payment-method-description">
     <div class="order-payment-method-title">
         <?= __('Type of payment: <b>%1</b>', $block->getMethodDescription()) ?>
     </div>
+    <?php if ($bmInvoiceId): ?>
+        <div class="order-payment-invoice-id">
+            <?= __('Billmate Invoice Id:  <b>%1</b>', $bmInvoiceId) ?>
+        </div>
+    <?php endif; ?>
 </div>
+

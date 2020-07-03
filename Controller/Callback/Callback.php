@@ -3,6 +3,7 @@ namespace Billmate\BillmateCheckout\Controller\Callback;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\DB\TransactionFactory;
+use Billmate\BillmateCheckout\Model\Order as BillmateOrder;
 
 class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
 {
@@ -133,7 +134,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 $order = $this->helper->getOrderById($order_id);
             }
             $orderState = "";
-            $order->setData('billmate_invoice_id', $requestData['data']['number']);
+            $order->setData(BillmateOrder::BM_INVOICE_ID_FIELD, $requestData['data']['number']);
             if (
                 $requestData['data']['status'] == 'Created' ||
                 $requestData['data']['status'] == 'Paid' ||

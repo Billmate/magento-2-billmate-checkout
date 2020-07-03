@@ -317,7 +317,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function priceToCents($price)
     {
-        return $price * 100;
+        return floor($price * 100);
     }
 
     /**
@@ -513,5 +513,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getApproveStatus()
     {
         return $this->configHelper->getApproveStatus();
+    }
+
+    /**
+     * @return Config
+     */
+    public function getConfigHelper(): Config
+    {
+        return $this->configHelper;
     }
 }

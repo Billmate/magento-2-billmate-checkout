@@ -1,9 +1,21 @@
 <?php
 namespace Billmate\BillmateCheckout\Model;
 
+/**
+ * Class Order
+ * @package Billmate\BillmateCheckout\Model
+ */
 class Order
 {
     const BM_ADDITIONAL_INFO_CODE = 'bm_payment_method';
+
+    const BM_ADDITIONAL_PAYMENT_CODE = 'payment_method_bm_code';
+
+    const BM_INVOICE_ID_FIELD = 'billmate_invoice_id';
+
+    const BM_TEST_MODE_FLAG = 'bm_test_mode';
+
+    const BM_TEST_MODE_VALUE = 1;
 
     /**
      * @var array
@@ -106,11 +118,18 @@ class Order
             if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
                 $this->orderSender->send($order);
             }
-            
+
             $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
 
             $orderState = $this->getOrderState();
             $order->setState($orderState)->setStatus($orderState);
+            if ($this->dataHelper->getConfigHelper()->getTestMode()) {
+                $order->setData(
+                    self::BM_TEST_MODE_FLAG,
+                    self::BM_TEST_MODE_VALUE
+                );
+            }
+
             $order->save();
 
             return $orderId;
@@ -171,23 +190,27 @@ class Order
         $shippingAddress->setCollectShippingRates(true)
             ->collectShippingRates()
             ->setShippingMethod($shippingCode);
+        $orderData = $this->getOrderData();
+
         $actual_quote->getShippingAddress()->addShippingRate($this->shippingRate);
         $actual_quote->setPaymentMethod($billmatePaymentMethod);
         $actual_quote->getPayment()->setQuote($actual_quote);
         $actual_quote->getPayment()->importData([
-            'method' => $billmatePaymentMethod,
+            'method' => $billmatePaymentMethod
         ]);
 
 
-        $orderData = $this->getOrderData();
+
         if (isset($orderData['payment_method_name'])) {
             $actual_quote->getPayment()->setAdditionalInformation(
                 self::BM_ADDITIONAL_INFO_CODE, $orderData['payment_method_name']
             );
+            $actual_quote->getPayment()->setAdditionalInformation(
+                self::BM_ADDITIONAL_PAYMENT_CODE, $orderData['payment_method_bm_code']
+            );
         }
 
         $actual_quote->setReservedOrderId($orderId);
-        $actual_quote->collectTotals();
         $actual_quote->save();
         return $actual_quote;
     }

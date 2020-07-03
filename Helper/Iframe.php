@@ -1,7 +1,10 @@
 <?php
-
 namespace Billmate\BillmateCheckout\Helper;
 
+/**
+ * Class Iframe
+ * @package Billmate\BillmateCheckout\Helper
+ */
 class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
@@ -53,16 +56,22 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
     ];
 
     /**
+     * @var \Billmate\BillmateCheckout\Model\Payment\Handling\Invoice
+     */
+    private $bmInvoiceHandler;
+
+    /**
      * Iframe constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context      $context
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Quote\Model\Quote\Address\Rate    $shippingRate
-     * @param \Magento\Checkout\Model\Session            $_checkoutSession
-     * @param Config                                     $configHelper
-     * @param Data                                       $dataHelper
-     * @param \Billmate\BillmateCheckout\Model\Api\Billmate          $billmateProvider
-     * @param \Magento\Tax\Model\CalculationFactory      $taxCalculation
+     * @param \Magento\Framework\App\Helper\Context                     $context
+     * @param \Magento\Store\Model\StoreManagerInterface                $storeManager
+     * @param \Magento\Quote\Model\Quote\Address\Rate                   $shippingRate
+     * @param \Magento\Checkout\Model\Session                           $_checkoutSession
+     * @param Config                                                    $configHelper
+     * @param Data                                                      $dataHelper
+     * @param \Billmate\BillmateCheckout\Model\Api\Billmate             $billmateProvider
+     * @param \Magento\Tax\Model\CalculationFactory                     $taxCalculation
+     * @param \Billmate\BillmateCheckout\Model\Payment\Handling\Invoice $bmInvoiceHandler
      */
     public function __construct(
 		\Magento\Framework\App\Helper\Context $context,
@@ -72,7 +81,8 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         \Billmate\BillmateCheckout\Helper\Config $configHelper,
         \Billmate\BillmateCheckout\Helper\Data $dataHelper,
         \Billmate\BillmateCheckout\Model\Api\Billmate $billmateProvider,
-        \Magento\Tax\Model\CalculationFactory $taxCalculation
+        \Magento\Tax\Model\CalculationFactory $taxCalculation,
+        \Billmate\BillmateCheckout\Model\Payment\Handling\Invoice $bmInvoiceHandler
 	){
         $this->_storeManager = $storeManager;
         $this->shippingRate = $shippingRate;
@@ -81,8 +91,10 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         $this->configHelper = $configHelper;
         $this->dataHelper = $dataHelper;
         $this->taxCalculation = $taxCalculation;
+        $this->bmInvoiceHandler = $bmInvoiceHandler;
 
         parent::__construct($context);
+
     }
 
     /**
@@ -135,6 +147,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
 
         $shippingAddressTotal = $this->getQuote()->getShippingAddress();
         $shippingTaxRate = $this->getShippingTaxRate();
+        $invoiceFeeHandling = $this->getInvoiceFeeHandling();
 
         $data['Cart'] = [
             'Shipping' => [
@@ -144,12 +157,25 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
                 'method' => $shippingAddressTotal->getShippingDescription(),
                 'method_code' => $shippingAddressTotal->getShippingMethod()
             ],
+            'Handling' => [
+                'withouttax' => $this->toCents($invoiceFeeHandling['amount']),
+                'taxrate'    => $invoiceFeeHandling['rate']
+            ],
             'Total' => [
                 'withouttax' => $this->toCents($shippingAddressTotal->getGrandTotal()
-                    - $shippingAddressTotal->getTaxAmount() - $shippingAddressTotal->getDiscountTaxCompensationAmount()),
-                'tax' => $this->toCents($shippingAddressTotal->getTaxAmount() + $shippingAddressTotal->getDiscountTaxCompensationAmount()),
+                    - $shippingAddressTotal->getTaxAmount() - $shippingAddressTotal->getDiscountTaxCompensationAmount()
+                    + $invoiceFeeHandling['amount']
+                ),
+                'tax' => $this->toCents(
+                    $shippingAddressTotal->getTaxAmount() + $shippingAddressTotal->getDiscountTaxCompensationAmount()
+                    + $invoiceFeeHandling['tax_amount']
+                ),
                 'rounding' => $this->toCents(0),
-                'withtax' => $this->toCents($shippingAddressTotal->getGrandTotal()),
+                'withtax' => $this->toCents(
+                    $shippingAddressTotal->getGrandTotal()
+                    + $invoiceFeeHandling['tax_amount']
+                    + $invoiceFeeHandling['amount']
+                ),
             ]
         ];
 
@@ -270,6 +296,14 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @return mixed
+     */
+    public function getInvoiceFeeHandling()
+    {
+        return $this->bmInvoiceHandler->getFeeData();
+    }
+
+    /**
      * @return int | null
      */
     protected function getBillmateCheckoutId()
@@ -351,11 +385,32 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected function getShippingTaxRate()
     {
+        $shippingTaxClass = $this->configHelper->getShippingTaxClass();
+        return $this->getTaxRate($shippingTaxClass);
+    }
+
+    protected function getTaxRate($taxClassId)
+    {
         $currentStore = $this->_storeManager->getStore();
         $currentStoreId = $currentStore->getId();
         $taxCalculation = $this->getTaxCalculation();
-        $request = $taxCalculation->getRateRequest(null, null, null, $currentStoreId);
-        $shippingTaxClass = $this->configHelper->getShippingTaxClass();
-        return $taxCalculation->getRate($request->setProductClassId($shippingTaxClass));
+        $request = $taxCalculation->getRateRequest(
+            null,
+            null,
+            null,
+            $currentStoreId
+        );
+
+        return $taxCalculation->getRate(
+            $request->setProductClassId($taxClassId)
+        );
+    }
+
+    /**
+     * @return Config
+     */
+    public function getConfigHelper(): Config
+    {
+        return $this->configHelper;
     }
 }
