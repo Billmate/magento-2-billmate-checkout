@@ -9,6 +9,10 @@ use Billmate\BillmateCheckout\Model\Order as BillmateOrder;
  */
 class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
 
+    const BILLMATE_PAID_STATUS = 'Paid';
+
+    const BILLMATE_CREATED_STATUS = 'Created';
+
     const PAYMENT_CODE_CHECKOUT = 'billmate_checkout';
 
     /**
@@ -182,8 +186,14 @@ class BillmateCheckout extends \Magento\Payment\Model\Method\AbstractMethod {
 
         $order = $payment->getOrder();
         $bmRequestData = $this->getBillmateRequestData($order);
+        $paymentData = $billmateConnection->getPaymentInfo($bmRequestData);
 
-        $billmateConnection->cancelPayment($bmRequestData);
+        switch ($paymentData['PaymentData']['status']) {
+            case self::BILLMATE_PAID_STATUS:
+                $billmateConnection->creditPayment($bmRequestData);
+            default:
+                $billmateConnection->cancelPayment($bmRequestData);
+        }
     }
 
     /**
