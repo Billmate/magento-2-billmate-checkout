@@ -22,8 +22,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if ($version == ""){
             $run = true;
         }
+        $quoteTable = 'quote';
         if (version_compare($context->getVersion(), '1.0.7') >= 0 || $run) {
-            $quoteTable = 'quote';
             $orderTable = 'sales_order';
             $setup->getConnection()->addColumn(
                 $setup->getTable($orderTable),
@@ -45,6 +45,18 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'default' => "",
                     'nullable' => true,
                     'comment' => 'Order Comment'
+                ]
+            );
+        }
+
+        if (version_compare($context->getVersion(), '1.6.11') >= 0 || $run) {
+            $setup->getConnection()->addColumn(
+                $setup->getTable($quoteTable),
+                'first_callback_received',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
+                    'nullable' => true,
+                    'comment' => 'true if first Billmate callback has been received'
                 ]
             );
         }

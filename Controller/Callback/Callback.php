@@ -59,7 +59,14 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
      */
     protected $orderModel;
 
-	public function __construct(
+    /**
+     * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
+     */
+    protected $quoteCollectionFactory;
+
+
+
+    public function __construct(
 	    Context $context,
         PageFactory $resultPageFactory,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
@@ -70,8 +77,10 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
         \Magento\Sales\Model\Service\InvoiceService $_invoiceService,
         \Billmate\BillmateCheckout\Model\Api\Billmate $billmateProvider,
         TransactionFactory $transactionFactory,
-        \Billmate\BillmateCheckout\Model\Order $orderModel
+        \Billmate\BillmateCheckout\Model\Order $orderModel,
+        \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
     ){
+	    $this->quoteCollectionFactory = $quoteCollectionFactory;
 		$this->resultPageFactory = $resultPageFactory;
         $this->resultJsonFactory = $resultJsonFactory;
 	    $this->productRepository = $productRepository;
@@ -102,6 +111,17 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 "number" => $requestData['data']['number']
             );
             $paymentInfo = $this->billmateProvider->getPaymentinfo($values);
+
+
+            $quote = $this->quoteCollectionFactory->create()->addFieldToFilter("reserved_order_id", $paymentInfo['PaymentData']['orderid'])->getFirstItem();
+            if (!$quote->getData('first_callback_received')){
+                $quote->setData('first_callback_received', true);
+                $quote->save();
+                $jsonResponse->setHttpResponseCode(412);
+                $respMessage = "ignoring first callback";
+                return $jsonResponse->setData($respMessage);
+            }
+
             $order = $this->helper->getOrderByIncrementId($paymentInfo['PaymentData']['orderid']);
             if (!is_string($order->getIncrementId())) {
                 $orderInfo = $this->getOrderInfo($paymentInfo);
