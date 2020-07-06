@@ -278,7 +278,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
 
         $shippingAddressTotal = $this->getQuote()->getShippingAddress();
         $discountAmount = $shippingAddressTotal->getDiscountAmount();
-        if ($discountAmount) {
+        if (abs($discountAmount) > 0) {
             $data['Articles'][] = [
                 'quantity' => '1',
                 'artnr' => 'discount_code',
