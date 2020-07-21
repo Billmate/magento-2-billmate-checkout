@@ -109,7 +109,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
                 'country_id' => $customerAddress['Billing']['country'],
                 'postcode' => $customerAddress['Billing']['zip'],
                 'telephone' => $customerAddress['Billing']['phone'],
-                'company' => $customerAddress['Billing']['company']??''
+                'company' => $customerAddress['Billing']['company']
             ];
         } elseif ($billingAddress) {
             $emailRequested = $this->getRequest()->getParam('email','');
@@ -123,7 +123,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
                 'country_id' => $billingAddress['country'],
                 'postcode' => $billingAddress['zip'],
                 'telephone' => $billingAddress['phone'],
-                'company' => $billingAddress['company']??''
+                'company' => $billingAddress['company']
             ];
         }
 
@@ -151,7 +151,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
                 'city'=> $shippingAddress['city'],
                 'country_id'=>$country,
                 'postcode'=> $shippingAddress['zip'],
-                'company'=> $shippingAddress['company']??''
+                'company'=> $shippingAddress['company']
             ];
         } elseif ($customerAddress) {
             if (isset($customerAddress['street'])) {
@@ -162,7 +162,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
                     'city'=> $customerAddress['Shipping']['city'],
                     'country_id'=> $customerAddress['Shipping']['country'],
                     'postcode'=> $customerAddress['Shipping']['zip'],
-                    'company'=> $customerAddress['Shipping']['company']??''
+                    'company'=> $customerAddress['Shipping']['company']
                 ];
             }
         }
