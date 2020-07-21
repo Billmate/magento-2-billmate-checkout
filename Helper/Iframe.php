@@ -178,6 +178,8 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
                 ),
             ]
         ];
+        // Calculate rodunding
+        $data['Cart']['Total']['rounding'] = $data['Cart']['Total']['withtax'] - ($data['Cart']['Total']['withouttax'] + $data['Cart']['Total']['tax']);
 
         return $data;
     }
