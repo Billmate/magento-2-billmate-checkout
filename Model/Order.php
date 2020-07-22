@@ -182,17 +182,18 @@ class Order
         } else {
             $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
         }
-
-        $this->shippingRate->setCode($shippingCode)->getPrice();
         $shippingAddress = $actual_quote->getShippingAddress();
+        if ($shippingCode !== null){
+            $this->shippingRate->setCode($shippingCode)->getPrice();
+            $shippingAddress->setCollectShippingRates(true)
+                ->collectShippingRates()
+                ->setShippingMethod($shippingCode);
+            $actual_quote->getShippingAddress()->addShippingRate($this->shippingRate);
+        }
 
         $billmatePaymentMethod = $this->dataHelper->getPaymentMethod();
-        $shippingAddress->setCollectShippingRates(true)
-            ->collectShippingRates()
-            ->setShippingMethod($shippingCode);
         $orderData = $this->getOrderData();
 
-        $actual_quote->getShippingAddress()->addShippingRate($this->shippingRate);
         $actual_quote->setPaymentMethod($billmatePaymentMethod);
         $actual_quote->getPayment()->setQuote($actual_quote);
         $actual_quote->getPayment()->importData([
@@ -205,6 +206,8 @@ class Order
             $actual_quote->getPayment()->setAdditionalInformation(
                 self::BM_ADDITIONAL_INFO_CODE, $orderData['payment_method_name']
             );
+        }
+        if (isset($orderData['payment_method_bm_code'])){
             $actual_quote->getPayment()->setAdditionalInformation(
                 self::BM_ADDITIONAL_PAYMENT_CODE, $orderData['payment_method_bm_code']
             );
