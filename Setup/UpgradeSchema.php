@@ -49,7 +49,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
         }
 
-        if (version_compare($context->getVersion(), '1.6.11') >= 0 || $run) {
+        if ($setup->getConnection()->tableColumnExists($setup->getTable($quoteTable), 'first_callback_received') === false) {
             $setup->getConnection()->addColumn(
                 $setup->getTable($quoteTable),
                 'first_callback_received',
