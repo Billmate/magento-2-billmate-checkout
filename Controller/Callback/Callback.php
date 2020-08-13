@@ -178,7 +178,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             'city' => $billingAddressReq['city'],
             'country_id' => $billingAddressReq['country'],
             'postcode' => $billingAddressReq['zip'],
-            'telephone' => $billingAddressReq['phone'],
+            'telephone' => (isset($billingAddressReq['phone'])) ? $billingAddressReq['phone'] : '',
             'email' =>$billingAddressReq['email']
         );
 
