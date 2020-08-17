@@ -179,7 +179,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             'country_id' => $billingAddressReq['country'],
             'postcode' => $billingAddressReq['zip'],
             'telephone' => (isset($billingAddressReq['phone'])) ? $billingAddressReq['phone'] : '',
-            'email' =>$billingAddressReq['email']
+            'email' => $billingAddressReq['email']
         );
 
         if (
@@ -194,7 +194,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 'city' => $shippingAddressReq['city'],
                 'country_id' => $shippingAddressReq['country'],
                 'postcode' => $shippingAddressReq['zip'],
-                'telephone' => $shippingAddressReq['phone']
+                'telephone' => (isset($shippingAddressReq['phone'])) ? $shippingAddressReq['phone'] : ''
             );
         } else {
             $customerAddressData = $billingAddress ;
