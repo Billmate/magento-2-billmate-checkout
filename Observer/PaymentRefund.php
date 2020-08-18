@@ -19,7 +19,7 @@ class PaymentRefund implements ObserverInterface
         $payment = $observer->getPayment();
         $paymentMethod = $payment->getMethodInstance();
         if ($paymentMethod->getCode() == BillmateCheckout::PAYMENT_CODE_CHECKOUT) {
-            $paymentMethod->refund($payment);
+            $paymentMethod->refund($payment, 0);
         }
     }
 }
