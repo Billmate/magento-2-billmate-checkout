@@ -1,10 +1,15 @@
 <?php
 namespace Billmate\BillmateCheckout\Controller\Callback;
+
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\DB\TransactionFactory;
 use Billmate\BillmateCheckout\Model\Order as BillmateOrder;
 
+/**
+ * Class Callback
+ * @package Billmate\BillmateCheckout\Controller\Callback
+ */
 class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
 {
     const COUNTRY_ID = 'se';
@@ -12,7 +17,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
     /**
      * @var PageFactory
      */
-	protected $resultPageFactory;
+    protected $resultPageFactory;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -22,27 +27,27 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
     /**
      * @var \Magento\Catalog\Api\ProductRepositoryInterface
      */
-	private $productRepository;
+    private $productRepository;
 
     /**
      * @var \Billmate\BillmateCheckout\Helper\Data
      */
-	protected $helper;
+    protected $helper;
 
     /**
      * @var \Billmate\BillmateCheckout\Helper\Config
      */
-	protected $configHelper;
+    protected $configHelper;
 
     /**
      * @var \Magento\Sales\Api\Data\OrderInterface
      */
-	protected $orderInterface;
+    protected $orderInterface;
 
     /**
      * @var \Magento\Sales\Model\Service\InvoiceService
      */
-	protected $invoiceService;
+    protected $invoiceService;
 
     /**
      * @var \Billmate\BillmateCheckout\Model\Api\Billmate
@@ -64,54 +69,72 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
      */
     protected $quoteCollectionFactory;
 
-
-
+    /**
+     * Callback constructor.
+     *
+     * @param Context $context
+     * @param PageFactory $resultPageFactory
+     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+     * @param \Billmate\BillmateCheckout\Helper\Data $_helper
+     * @param \Billmate\BillmateCheckout\Helper\Config $configHelper
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param \Magento\Sales\Model\Service\InvoiceService $_invoiceService
+     * @param \Billmate\BillmateCheckout\Model\Api\Billmate $billmateProvider
+     * @param TransactionFactory $transactionFactory
+     * @param BillmateOrder $orderModel
+     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
+     */
     public function __construct(
-	    Context $context,
+        Context $context,
         PageFactory $resultPageFactory,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Billmate\BillmateCheckout\Helper\Data $_helper,
         \Billmate\BillmateCheckout\Helper\Config $configHelper,
-		\Magento\Sales\Api\Data\OrderInterface $order,
+        \Magento\Sales\Api\Data\OrderInterface $order,
         \Magento\Sales\Model\Service\InvoiceService $_invoiceService,
         \Billmate\BillmateCheckout\Model\Api\Billmate $billmateProvider,
         TransactionFactory $transactionFactory,
         \Billmate\BillmateCheckout\Model\Order $orderModel,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
-    ){
-	    $this->quoteCollectionFactory = $quoteCollectionFactory;
-		$this->resultPageFactory = $resultPageFactory;
+    ) {
+        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->resultPageFactory = $resultPageFactory;
         $this->resultJsonFactory = $resultJsonFactory;
-	    $this->productRepository = $productRepository;
-		$this->invoiceService = $_invoiceService;
-		$this->helper = $_helper;
-		$this->configHelper = $configHelper;
-		$this->orderInterface = $order;
+        $this->productRepository = $productRepository;
+        $this->invoiceService = $_invoiceService;
+        $this->helper = $_helper;
+        $this->configHelper = $configHelper;
+        $this->orderInterface = $order;
         $this->billmateProvider = $billmateProvider;
         $this->_transactionFactory = $transactionFactory;
         $this->orderModel = $orderModel;
 
-		parent::__construct($context);
-	}
+        parent::__construct($context);
+    }
 
-	public function execute()
+    /**
+     * Parent method to execute the Callback
+     *
+     * @return \Magento\Framework\Controller\Result\JsonFactory
+     */
+    public function execute()
     {
         $jsonResponse = $this->resultJsonFactory->create();
         $requestData = $this->getBmRequestData();
-		$hash = $this->getHashCode($requestData);
+        $hash = $this->getHashCode($requestData);
 
-		try{
+        try {
             if ($hash != $requestData['credentials']['hash']) {
                 throw new \Exception(
                     __('Invalid credentials hash.')
                 );
             }
             $values = array(
-                "number" => $requestData['data']['number']
+                'number' => $requestData['data']['number']
             );
             $paymentInfo = $this->billmateProvider->getPaymentinfo($values);
-
 
             $quote = $this->quoteCollectionFactory->create()->addFieldToFilter("reserved_order_id", $paymentInfo['PaymentData']['orderid'])->getFirstItem();
             if (!$quote->getData('first_callback_received')){
@@ -161,43 +184,43 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             $respMessage = $exception->getMessage();
         }
         return $jsonResponse->setData($respMessage);
-	}
+    }
 
     /**
      * @param $customerAddress
      *
      * @return array
      */
-	protected function processShippingAddress($customerAddress)
+    protected function processShippingAddress($customerAddress)
     {
         $billingAddressReq = $customerAddress['Billing'];
         $billingAddress = array(
-            'firstname' => $billingAddressReq['firstname'],
-            'lastname' => $billingAddressReq['lastname'],
-            'street' => $billingAddressReq['street'],
-            'city' => $billingAddressReq['city'],
-            'country_id' => $billingAddressReq['country'],
-            'postcode' => $billingAddressReq['zip'],
+            'firstname' => (isset($billingAddressReq['firstname'])) ? $billingAddressReq['firstname'] : '',
+            'lastname' => (isset($billingAddressReq['lastname'])) ? $billingAddressReq['lastname'] : '',
+            'street' => (isset($billingAddressReq['street'])) ? $billingAddressReq['street'] : '',
+            'city' => (isset($billingAddressReq['city'])) ? $billingAddressReq['city'] : '',
+            'country_id' => (isset($billingAddressReq['country'])) ? $billingAddressReq['country'] : '',
+            'postcode' => (isset($billingAddressReq['zip'])) ? $billingAddressReq['zip'] : '',
             'telephone' => (isset($billingAddressReq['phone'])) ? $billingAddressReq['phone'] : '',
-            'email' => $billingAddressReq['email']
+            'email' => (isset($billingAddressReq['email'])) ? $billingAddressReq['email'] : ''
         );
 
         if (
             isset($customerAddress['Shipping']) &&
-            isset( $customerAddress['Shipping']['firstname'])
+            isset($customerAddress['Shipping']['firstname'])
         ) {
             $shippingAddressReq = $customerAddress['Shipping'];
             $customerAddressData = array(
-                'firstname' => $shippingAddressReq['firstname'],
-                'lastname' => $shippingAddressReq['lastname'],
-                'street' => $shippingAddressReq['street'],
-                'city' => $shippingAddressReq['city'],
-                'country_id' => $shippingAddressReq['country'],
-                'postcode' => $shippingAddressReq['zip'],
+                'firstname' => (isset($shippingAddressReq['firstname'])) ? $shippingAddressReq['firstname'] : '',
+                'lastname' => (isset($shippingAddressReq['lastname'])) ? $shippingAddressReq['lastname'] : '',
+                'street' => (isset($shippingAddressReq['street'])) ? $shippingAddressReq['street'] : '',
+                'city' => (isset($shippingAddressReq['city'])) ? $shippingAddressReq['city'] : '',
+                'country_id' => (isset($shippingAddressReq['country'])) ? $shippingAddressReq['country'] : '',
+                'postcode' => (isset($shippingAddressReq['zip'])) ? $shippingAddressReq['zip'] : '',
                 'telephone' => (isset($shippingAddressReq['phone'])) ? $shippingAddressReq['phone'] : ''
             );
         } else {
-            $customerAddressData = $billingAddress ;
+            $customerAddressData = $billingAddress;
         }
 
         $this->helper->setBillingAddress($billingAddress);
@@ -215,9 +238,9 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
     {
         $customerAddressData = $this->processShippingAddress($paymentInfo['Customer']);
         $orderInfo = array(
-            'currency_id'  => $paymentInfo['PaymentData']['currency'],
+            'currency_id'  => (isset($paymentInfo['PaymentData']['currency'])) ? $paymentInfo['PaymentData']['currency'] : '',
             'email'        => (isset($customerAddressData['email'])) ? $customerAddressData['email'] : '',
-            'shipping_address' => $customerAddressData,
+            'shipping_address' => (isset($customerAddressData)) ? $customerAddressData : array(),
             'items' => array()
         );
         $orderInfo['payment_method_name'] = $paymentInfo['PaymentData']['method_name'];
