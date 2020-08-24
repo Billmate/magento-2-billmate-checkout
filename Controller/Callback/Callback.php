@@ -216,7 +216,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
         $customerAddressData = $this->processShippingAddress($paymentInfo['Customer']);
         $orderInfo = array(
             'currency_id'  => $paymentInfo['PaymentData']['currency'],
-            'email'        => $customerAddressData['email'],
+            'email'        => (isset($customerAddressData['email'])) ? $customerAddressData['email'] : '',
             'shipping_address' => $customerAddressData,
             'items' => array()
         );
