@@ -83,15 +83,22 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
 
             $paymentInfo = $this->billmateProvider->getPaymentinfo($values);
 
-			if (!$this->helper->getSessionData('bm-inc-id')) {
-				$orderData = array(
-					'email' => $this->helper->getSessionData('billmate_email'),
-					'shipping_address' => $this->helper->getSessionData('billmate_billing_address'),
+            if (!$this->helper->getSessionData('bm-inc-id')) {
+                $billmateEmail = ($this->helper->getSessionData('billmate_email')) ? $this->helper->getSessionData('billmate_email') : $paymentInfo['Customer']['Billing']['email'];
+                $billmateShipping = ($this->helper->getSessionData('billmate_billing_address')) ? $this->helper->getSessionData('billmate_billing_address') : $paymentInfo['Customer']['Billing']['street'];
+                $billmateStatus = ($requestData['data']['status']) ? $requestData['data']['status'] : $paymentInfo['PaymentData']['status'];
+                if (!$billmateShipping) {
+                    $billmateShipping = ($paymentInfo['Customer']['Shipping']['street']) ? $paymentInfo['Customer']['Shipping']['street'] : $paymentInfo['Customer']['Billing']['street'];
+                }
+
+                $orderData = array(
+                    'email' => $billmateEmail,
+                    'shipping_address' => $billmateShipping,
                     'payment_method_name' => $paymentInfo['PaymentData']['method_name'],
                     'payment_method_bm_code' => $paymentInfo['PaymentData']['method'],
-                    'payment_bm_status' => $requestData['data']['status'],
-				);
-				$orderId = $this->orderModel->setOrderData($orderData)->create();
+                    'payment_bm_status' => $billmateStatus,
+                );
+                $orderId = $this->orderModel->setOrderData($orderData)->create();
                 if (!$orderId) {
                     throw new \Exception(
                         __('An error occurred on the server. Please try to place the order again.')
