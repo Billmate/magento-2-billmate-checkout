@@ -154,7 +154,7 @@ class Order
      *
      * @return mixed
      */
-    protected function createQuote($orderId, $customer)
+    protected function createQuote($orderId, $customer, $email = "")
     {
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
@@ -165,10 +165,16 @@ class Order
 
         $store = $this->_storeManager->getStore();
 
-        $actual_quote->setCustomerEmail($customer->getEmail());
+        if ($customer) {
+            $actual_quote->setCustomerEmail($customer->getEmail());
+            $actual_quote->assignCustomer($customer);
+        }
+        else {
+            $actual_quote->setCustomerEmail($email);
+        }
+
         $actual_quote->setStore($store);
         $actual_quote->setCurrency();
-        $actual_quote->assignCustomer($customer);
 
         if ($this->dataHelper->getSessionData('billmate_applied_discount_code')) {
             $discountCode = $this->dataHelper->getSessionData('billmate_applied_discount_code');
@@ -200,8 +206,6 @@ class Order
             'method' => $billmatePaymentMethod
         ]);
 
-
-
         if (isset($orderData['payment_method_name'])) {
             $actual_quote->getPayment()->setAdditionalInformation(
                 self::BM_ADDITIONAL_INFO_CODE, $orderData['payment_method_name']
@@ -224,21 +228,31 @@ class Order
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
 
-        $customer = $this->getCustomer($this->getOrderData());
-        $actualQuote = $this->createQuote($orderId, $customer);
+        $orderData = $this->getOrderData();
+        $customer = $this->getCustomer($orderData);
+        $actualQuote = $this->createQuote($orderId, $customer, $orderData['email']);
 
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
-        $cart->setCustomerEmail($customer->getEmail());
+        $cart->setCustomerEmail($orderData['email']);
         $cart->getBillingAddress()->addData($billmateBillingAddress);
         if ($billmateShippingAddress){
             $cart->getShippingAddress()->addData($billmateShippingAddress);
         } else {
             $cart->getShippingAddress()->addData($billmateBillingAddress);
         }
-        $cart->getBillingAddress()->setCustomerId($customer->getId());
-        $cart->getShippingAddress()->setCustomerId($customer->getId());
-        $cart->setCustomerId($customer->getId());
-        $cart->assignCustomer($customer);
+        if ($customer) {
+            $cart->getBillingAddress()->setCustomerId($customer->getId());
+            $cart->getShippingAddress()->setCustomerId($customer->getId());
+            $cart->setCustomerId($customer->getId());
+            $cart->assignCustomer($customer);
+        }
+        else {
+            $cart->setCustomerId(null);
+            $cart->setCustomerEmail($orderData['email']);
+            $cart->setCustomerIsGuest(true);
+            $cart->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
+            $cart->setCheckoutMethod(\Magento\Quote\Api\CartManagementInterface::METHOD_GUEST);
+        }
         $cart->save();
         return $cart;
     }
@@ -246,10 +260,13 @@ class Order
     /**
      * @param $orderData
      *
-     * @return \Magento\Customer\Api\Data\CustomerInterface
+     * @return \Magento\Customer\Api\Data\CustomerInterface|bool
      */
     protected function getCustomer($orderData)
     {
+        if (!isset($orderData['shipping_address'])){
+            return false;
+        }
         $store = $this->_storeManager->getStore();
         $websiteId = $this->_storeManager->getStore()->getWebsiteId();
 
@@ -309,9 +326,7 @@ class Order
     }
 
     /**
-     * @param $orderData
-     *
-     * @return $this
+     * @return array
      */
     public function getOrderData()
     {
