@@ -156,8 +156,14 @@ class Order
      */
     protected function createQuote($orderId, $customer)
     {
-        $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
-        $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
+        $billmateShippingAddress = array();
+        if ($this->dataHelper->getSessionData('billmate_shipping_address')) {
+            $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
+        }
+        $billmateBillingAddress = array();
+        if ($this->dataHelper->getSessionData('billmate_billing_address')) {
+            $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
+        }
         $shippingCode = $this->dataHelper->getSessionData('shipping_code');
 
         $actual_quote = $this->quoteCollectionFactory->create()
@@ -221,8 +227,14 @@ class Order
 
     protected function createCart($orderId)
     {
-        $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
-        $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
+        $billmateShippingAddress = array();
+        if ($this->dataHelper->getSessionData('billmate_shipping_address')) {
+            $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
+        }
+        $billmateBillingAddress = array();
+        if ($this->dataHelper->getSessionData('billmate_billing_address')) {
+            $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
+        }
 
         $customer = $this->getCustomer($this->getOrderData());
         $actualQuote = $this->createQuote($orderId, $customer);
