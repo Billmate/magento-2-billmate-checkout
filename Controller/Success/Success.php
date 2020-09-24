@@ -68,18 +68,18 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
         $this->successValidator = $successValidator;
         $this->orderModel = $orderModel;
         $this->billmateProvider = $billmateProvider;
-		parent::__construct($context);
-	}
+        parent::__construct($context);
+    }
 
-	public function execute()
+    public function execute()
     {
-        $writer = new \Zend\Log\Writer\Stream(BP.'/var/log/sucesspage.log');
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/sucesspage.log');
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);
         $this->helper->setSessionData('billmate_checkout_id',null);
         $logger->info("test");
 
-		try{
+        try{
             $logger->info("just innanför try");
 
             $requestData = $this->getBmRequestData();
@@ -115,12 +115,7 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
                 $logger->info("fanns redan sessionsdata");
 
             }
-            
-
-			
-
-		}
-		catch (\Exception $e){
+        } catch (\Exception $e){
 
             $logger->info("e - message". $e->getMessage());
             $logger->info("e - file". $e->getFile());
