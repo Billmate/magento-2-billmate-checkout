@@ -22,6 +22,8 @@ class Order
      */
     protected $orderData;
 
+    protected $orderSent;
+
     /**
      * @var OrderManagementInterface
      */
@@ -94,11 +96,21 @@ class Order
      */
     public function create($orderId = '')
     {
-        try {
+        $writer = new \Zend\Log\Writer\Stream(BP.'/var/log/ordercreatepagesss.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
 
+        try {
+            $logger->info("testar");
+
+            $this->orderSent = 0;
             if (!$this->getOrderData()) {
+                $logger->info("Finns ingen orderdata, är det här den kommer till felsidan?");
+
                 throw new \Exception('The request does not contain order data');
             }
+
+            $logger->info("Just innan orderID ");
 
             if ($orderId == '') {
                 $orderId = $this->dataHelper->getQuote()->getReservedOrderId();
@@ -111,29 +123,16 @@ class Order
 
             $actualCart = $this->createCart($orderId);
 
-            $orderId = $this->cartManagementInterface->placeOrder($actualCart->getId());
+            $logger->info("reserved order id".$orderId);
 
-            $order = $this->dataHelper->getOrderById($orderId);
 
-            if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
-                $this->orderSender->send($order);
-            }
-
-            $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
-
-            $orderState = $this->getOrderState();
-            $order->setState($orderState)->setStatus($orderState);
-            if ($this->dataHelper->getConfigHelper()->getTestMode()) {
-                $order->setData(
-                    self::BM_TEST_MODE_FLAG,
-                    self::BM_TEST_MODE_VALUE
-                );
-            }
-
-            $order->save();
-
-            return $orderId;
+            
         } catch (\Exception $e){
+
+            $logger->info("e - message". $e->getMessage());
+            $logger->info("e - file". $e->getFile());
+            $logger->info("e - line". $e->getLine());
+
             $this->dataHelper->addLog([
                 'Could not create order',
                 '__FILE__' => __FILE__,
@@ -146,24 +145,50 @@ class Order
             ]);
             return 0;
         }
+
+        //ifall en order skickas till magento så skickas kunden till
+        
+        $orderId = $this->cartManagementInterface->placeOrder($actualCart->getId());
+
+        $this->orderSent = 1;
+
+
+        $logger->info("order id".$orderId);
+
+
+        $order = $this->dataHelper->getOrderById($orderId);
+
+        if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
+            $this->orderSender->send($order);
+        }
+
+        $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
+
+        $orderState = $this->getOrderState();
+        $order->setState($orderState)->setStatus($orderState);
+        if ($this->dataHelper->getConfigHelper()->getTestMode()) {
+            $order->setData(
+                self::BM_TEST_MODE_FLAG,
+                self::BM_TEST_MODE_VALUE
+            );
+        }
+
+        $order->save();
+         
+        return $orderId;
+
     }
 
     /**
      * @param $orderId
      * @param $customer
-     *
+     * Creates qoutes for order.
      * @return mixed
      */
     protected function createQuote($orderId, $customer)
     {
-        $billmateShippingAddress = array();
-        if ($this->dataHelper->getSessionData('billmate_shipping_address')) {
-            $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
-        }
-        $billmateBillingAddress = array();
-        if ($this->dataHelper->getSessionData('billmate_billing_address')) {
-            $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
-        }
+        $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
+        $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
         $shippingCode = $this->dataHelper->getSessionData('shipping_code');
 
         $actual_quote = $this->quoteCollectionFactory->create()
@@ -224,22 +249,26 @@ class Order
         return $actual_quote;
     }
 
-
+    /**
+     * Create cart for order
+     */
     protected function createCart($orderId)
     {
-        $billmateShippingAddress = array();
-        if ($this->dataHelper->getSessionData('billmate_shipping_address')) {
-            $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
-        }
-        $billmateBillingAddress = array();
-        if ($this->dataHelper->getSessionData('billmate_billing_address')) {
-            $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
-        }
+
+        $writer = new \Zend\Log\Writer\Stream(BP.'/var/log/createcart.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+
+        $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
+        $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
 
         $customer = $this->getCustomer($this->getOrderData());
         $actualQuote = $this->createQuote($orderId, $customer);
 
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
+
+        $logger->info("quote id".$actualQuote->getId());
+
         $cart->setCustomerEmail($customer->getEmail());
         $cart->getBillingAddress()->addData($billmateBillingAddress);
         if ($billmateShippingAddress){
@@ -262,6 +291,11 @@ class Order
      */
     protected function getCustomer($orderData)
     {
+        $writer = new \Zend\Log\Writer\Stream(BP.'/var/log/createcustomer.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+
+
         $store = $this->_storeManager->getStore();
         $websiteId = $this->_storeManager->getStore()->getWebsiteId();
 
@@ -270,7 +304,18 @@ class Order
         $customer->loadByEmail($orderData['email']);
 
         $_password = str_pad($orderData['email'], 10, rand(111,999));
+
+
+        //här blir det fel vid firstname åäö
+
         if (!$customer->getEntityId()){
+
+            $logger->info("First name ".$orderData['shipping_address']['firstname']);
+            $logger->info("First name dump ".print_r($orderData));
+
+            
+
+
             $customer->setWebsiteId($websiteId)
                 ->setStore($store)
                 ->setFirstname($orderData['shipping_address']['firstname'])
@@ -345,4 +390,10 @@ class Order
     {
         return $this->bmHoldStatus;
     }
+    public function isOrderSent()
+    {
+        return $this->orderSent;
+    }
+
+    
 }
