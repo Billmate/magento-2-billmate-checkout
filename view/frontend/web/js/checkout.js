@@ -1,4 +1,3 @@
-//åäö
 define([
 	'jquery'
 ], function ($, billmateajax) {
