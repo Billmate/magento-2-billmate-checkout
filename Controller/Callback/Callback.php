@@ -124,9 +124,6 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
         $jsonResponse = $this->resultJsonFactory->create();
         $requestData = $this->getBmRequestData();
         $hash = $this->getHashCode($requestData);
-        $writer = new \Zend\Log\Writer\Stream(BP.'/var/log/callbackphpfile.log');
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
 
         try {
             if ($hash != $requestData['credentials']['hash']) {
@@ -143,8 +140,6 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             if (!$quote->getData('first_callback_received')){
                 $quote->setData('first_callback_received', true);
                 $quote->save();
-                
-                $logger->info("Det blir fel i callback");
 
                 $jsonResponse->setHttpResponseCode(412);
                 $respMessage = "ignoring first callback";
@@ -184,12 +179,8 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 $order->save();
                 $respMessage = __('Order status successfully updated.');
             }
-
         } catch(\Exception $exception) {
-            //$jsonResponse->setHttpResponseCode(500);
-            //$respMessage = $exception->getMessage();
             $this->helper->clearSession();
-
             $respMessage = $this->resultRedirectFactory->create()->setPath('billmatecheckout/success/error');
 
         }
