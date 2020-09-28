@@ -45,6 +45,10 @@ class Comment extends \Magento\Framework\App\Action\Action
                 $quote->save();
             }
         }
-        catch (\Exception $e){}
+        catch (\Exception $e){
+            $this->helper->clearSession();
+
+            $this->resultRedirectFactory->create()->setPath('billmatecheckout/success/error');
+        }
     }
 }

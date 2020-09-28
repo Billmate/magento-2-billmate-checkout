@@ -140,6 +140,7 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
             if (!$quote->getData('first_callback_received')){
                 $quote->setData('first_callback_received', true);
                 $quote->save();
+
                 $jsonResponse->setHttpResponseCode(412);
                 $respMessage = "ignoring first callback";
                 return $jsonResponse->setData($respMessage);
@@ -178,10 +179,10 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 $order->save();
                 $respMessage = __('Order status successfully updated.');
             }
-
         } catch(\Exception $exception) {
-            $jsonResponse->setHttpResponseCode(500);
-            $respMessage = $exception->getMessage();
+            $this->helper->clearSession();
+            $respMessage = $this->resultRedirectFactory->create()->setPath('billmatecheckout/success/error');
+
         }
         return $jsonResponse->setData($respMessage);
     }
