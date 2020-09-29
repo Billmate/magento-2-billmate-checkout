@@ -264,10 +264,14 @@ class Order
 
         $_password = str_pad($orderData['email'], 10, rand(111,999));
         if (!$customer->getEntityId()){
+            $shippingFirstName =
+                (isset($orderData['shipping_address']['firstname'])) ? $orderData['shipping_address']['firstname'] : '';
+            $shippingLastName =
+                (isset($orderData['shipping_address']['lastname'])) ? $orderData['shipping_address']['lastname'] : '';
             $customer->setWebsiteId($websiteId)
                 ->setStore($store)
-                ->setFirstname($orderData['shipping_address']['firstname'])
-                ->setLastname($orderData['shipping_address']['lastname'])
+                ->setFirstname($shippingFirstName)
+                ->setLastname($shippingLastName)
                 ->setEmail($orderData['email'])
                 ->setPassword($_password);
             $customer->save();
