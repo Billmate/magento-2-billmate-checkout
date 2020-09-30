@@ -96,11 +96,15 @@ class Order
      */
     public function create($orderId = '')
     {
+
         try {
+
             $this->orderSent = 0;
             if (!$this->getOrderData()) {
+
                 throw new \Exception('The request does not contain order data');
             }
+
 
             if ($orderId == '') {
                 $orderId = $this->dataHelper->getQuote()->getReservedOrderId();
@@ -112,7 +116,12 @@ class Order
             }
 
             $actualCart = $this->createCart($orderId);
+
+
+
+            
         } catch (\Exception $e){
+            
             $this->dataHelper->addLog([
                 'Could not create order',
                 '__FILE__' => __FILE__,
@@ -126,9 +135,12 @@ class Order
             return 0;
         }
 
-        // In case of an order is sent to Magento
+        //ifall en order skickas till magento så skickas kunden till
+        
         $orderId = $this->cartManagementInterface->placeOrder($actualCart->getId());
+
         $this->orderSent = 1;
+
         $order = $this->dataHelper->getOrderById($orderId);
 
         if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
@@ -145,9 +157,11 @@ class Order
                 self::BM_TEST_MODE_VALUE
             );
         }
-        $order->save();
 
+        $order->save();
+         
         return $orderId;
+
     }
 
     /**
@@ -176,14 +190,15 @@ class Order
             $discountCode = $this->dataHelper->getSessionData('billmate_applied_discount_code');
             $actual_quote->setCouponCode($discountCode);
         }
-
-        $actual_quote->getBillingAddress()->addData($billmateBillingAddress);
-
-        if ($billmateShippingAddress){
+        
+        if ($billmateShippingAddress) {
             $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
-        } else {
+        } else if ($billmateBillingAddress) {
             $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+        } else {
+            throw new \Exception('The session for the customer does no longer exist.');
         }
+
         $shippingAddress = $actual_quote->getShippingAddress();
         if ($shippingCode !== null){
             $this->shippingRate->setCode($shippingCode)->getPrice();
@@ -225,6 +240,8 @@ class Order
      */
     protected function createCart($orderId)
     {
+
+
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
 
@@ -232,6 +249,7 @@ class Order
         $actualQuote = $this->createQuote($orderId, $customer);
 
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
+
 
         $cart->setCustomerEmail($customer->getEmail());
         $cart->getBillingAddress()->addData($billmateBillingAddress);
@@ -255,6 +273,8 @@ class Order
      */
     protected function getCustomer($orderData)
     {
+
+
         $store = $this->_storeManager->getStore();
         $websiteId = $this->_storeManager->getStore()->getWebsiteId();
 
@@ -263,6 +283,10 @@ class Order
         $customer->loadByEmail($orderData['email']);
 
         $_password = str_pad($orderData['email'], 10, rand(111,999));
+
+
+        //här blir det fel vid firstname åäö
+
         if (!$customer->getEntityId()){
             $shippingFirstName = '';
             if (isset($orderData['shipping_address']['firstname']) && $orderData['shipping_address']['firstname'] !== '') {
@@ -277,7 +301,6 @@ class Order
             } else if (isset($orderData['billing_address']['lastname']) && $orderData['billing_address']['lastname'] !== '') {
                 $shippingLastName = $orderData['billing_address']['lastname'];
             }
-
             $customer->setWebsiteId($websiteId)
                 ->setStore($store)
                 ->setFirstname($shippingFirstName)
