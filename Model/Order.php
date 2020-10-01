@@ -96,15 +96,11 @@ class Order
      */
     public function create($orderId = '')
     {
-
         try {
-
             $this->orderSent = 0;
             if (!$this->getOrderData()) {
-
                 throw new \Exception('The request does not contain order data');
             }
-
 
             if ($orderId == '') {
                 $orderId = $this->dataHelper->getQuote()->getReservedOrderId();
@@ -116,12 +112,7 @@ class Order
             }
 
             $actualCart = $this->createCart($orderId);
-
-
-
-            
         } catch (\Exception $e){
-            
             $this->dataHelper->addLog([
                 'Could not create order',
                 '__FILE__' => __FILE__,
@@ -135,12 +126,8 @@ class Order
             return 0;
         }
 
-        //ifall en order skickas till magento så skickas kunden till
-        
         $orderId = $this->cartManagementInterface->placeOrder($actualCart->getId());
-
         $this->orderSent = 1;
-
         $order = $this->dataHelper->getOrderById($orderId);
 
         if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
@@ -169,6 +156,7 @@ class Order
      * @param $customer
      * Creates qoutes for order.
      * @return mixed
+     * @throws \Exception
      */
     protected function createQuote($orderId, $customer)
     {
@@ -240,8 +228,6 @@ class Order
      */
     protected function createCart($orderId)
     {
-
-
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
 
@@ -249,7 +235,6 @@ class Order
         $actualQuote = $this->createQuote($orderId, $customer);
 
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
-
 
         $cart->setCustomerEmail($customer->getEmail());
         $cart->getBillingAddress()->addData($billmateBillingAddress);
@@ -273,8 +258,6 @@ class Order
      */
     protected function getCustomer($orderData)
     {
-
-
         $store = $this->_storeManager->getStore();
         $websiteId = $this->_storeManager->getStore()->getWebsiteId();
 
@@ -283,9 +266,6 @@ class Order
         $customer->loadByEmail($orderData['email']);
 
         $_password = str_pad($orderData['email'], 10, rand(111,999));
-
-
-        //här blir det fel vid firstname åäö
 
         if (!$customer->getEntityId()){
             $shippingFirstName = '';

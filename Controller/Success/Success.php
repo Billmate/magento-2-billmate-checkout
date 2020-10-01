@@ -133,7 +133,7 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
             }
             $this->helper->clearSession();
 
-            //Här gör vi en cancel
+            // Execute a cancel transfer
             $values = array(
                 "number" => $requestData['data']['number']
             );
@@ -146,17 +146,10 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
            return $this->resultRedirectFactory->create()->setPath('billmatecheckout/success/error');
         }
 
-       
-
         if (!$this->helper->getSessionData('bm-inc-id')){
             $orderId = $this->orderModel->setOrderData($orderData)->create();
-
                 if (!$orderId) {
-
-
-
-
-                    //Här gör vi en cancel
+                    // Execute a cancel transfer
                     $values = array(
                         "number" => $requestData['data']['number']
                     );
