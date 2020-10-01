@@ -106,15 +106,7 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
                 );
                 
             }
-
-            
-
-			
-
-		}
-		catch (\Exception $e){
-
-
+        } catch (\Exception $e){
             $this->helper->addLog([
                 'note' => 'Could not redirect customer to store order confirmation page',
                 '__FILE__' => __FILE__,
@@ -126,10 +118,8 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
                 'exception.line' => $e->getLine(),
             ]);
 
-
-            if($this->orderModel->isOrderSent() == 1){
+            if ($this->orderModel->isOrderSent() == 1) {
                 return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
-
             }
             $this->helper->clearSession();
 
