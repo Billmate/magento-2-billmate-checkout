@@ -126,7 +126,6 @@ class Order
             return 0;
         }
 
-        // In case of an order is sent to Magento
         $orderId = $this->cartManagementInterface->placeOrder($actualCart->getId());
         $this->orderSent = 1;
         $order = $this->dataHelper->getOrderById($orderId);
@@ -145,9 +144,11 @@ class Order
                 self::BM_TEST_MODE_VALUE
             );
         }
-        $order->save();
 
+        $order->save();
+         
         return $orderId;
+
     }
 
     /**
@@ -155,6 +156,7 @@ class Order
      * @param $customer
      * Creates qoutes for order.
      * @return mixed
+     * @throws \Exception
      */
     protected function createQuote($orderId, $customer)
     {
@@ -176,14 +178,15 @@ class Order
             $discountCode = $this->dataHelper->getSessionData('billmate_applied_discount_code');
             $actual_quote->setCouponCode($discountCode);
         }
-
-        $actual_quote->getBillingAddress()->addData($billmateBillingAddress);
-
-        if ($billmateShippingAddress){
+        
+        if ($billmateShippingAddress) {
             $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
-        } else {
+        } else if ($billmateBillingAddress) {
             $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+        } else {
+            throw new \Exception('The session for the customer does no longer exist.');
         }
+
         $shippingAddress = $actual_quote->getShippingAddress();
         if ($shippingCode !== null){
             $this->shippingRate->setCode($shippingCode)->getPrice();
@@ -263,6 +266,7 @@ class Order
         $customer->loadByEmail($orderData['email']);
 
         $_password = str_pad($orderData['email'], 10, rand(111,999));
+
         if (!$customer->getEntityId()){
             $shippingFirstName = '';
             if (isset($orderData['shipping_address']['firstname']) && $orderData['shipping_address']['firstname'] !== '') {
@@ -277,7 +281,6 @@ class Order
             } else if (isset($orderData['billing_address']['lastname']) && $orderData['billing_address']['lastname'] !== '') {
                 $shippingLastName = $orderData['billing_address']['lastname'];
             }
-
             $customer->setWebsiteId($websiteId)
                 ->setStore($store)
                 ->setFirstname($shippingFirstName)
