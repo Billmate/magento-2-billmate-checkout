@@ -181,10 +181,8 @@ class Order
         
         if ($billmateShippingAddress) {
             $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
-        } else if ($billmateBillingAddress) {
-            $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
         } else {
-            throw new \Exception('The session for the customer does no longer exist.');
+            $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
         }
 
         $shippingAddress = $actual_quote->getShippingAddress();
