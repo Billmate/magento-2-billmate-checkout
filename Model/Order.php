@@ -178,11 +178,13 @@ class Order
             $discountCode = $this->dataHelper->getSessionData('billmate_applied_discount_code');
             $actual_quote->setCouponCode($discountCode);
         }
-        
-        if ($billmateShippingAddress) {
-            $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
-        } else {
-            $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+
+        if (!is_string($actual_quote->getShippingAddress()->getFirstname())) {
+            if ($billmateShippingAddress) {
+                $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
+            } else {
+                $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+            }
         }
 
         $shippingAddress = $actual_quote->getShippingAddress();
