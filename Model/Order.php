@@ -42,6 +42,10 @@ class Order
      */
     protected $bmHoldStatus = 'Pending';
 
+
+    protected $noBillingAdress = 'Pending';
+
+
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
@@ -96,6 +100,7 @@ class Order
      */
     public function create($orderId = '')
     {
+        
         try {
             $this->orderSent = 0;
             if (!$this->getOrderData()) {
@@ -112,7 +117,20 @@ class Order
             }
 
             $actualCart = $this->createCart($orderId);
+
+            if($actualCart->getCustomerId() == 99999999999999){
+
+                return 0;
+            }
+            if((!$this->dataHelper->getSessionData('billmate_shipping_address')) && (!$this->dataHelper->getSessionData('billmate_billing_address'))){
+
+                return 0;
+            }
+
+
         } catch (\Exception $e){
+           
+
             $this->dataHelper->addLog([
                 'Could not create order',
                 '__FILE__' => __FILE__,
@@ -160,6 +178,7 @@ class Order
      */
     protected function createQuote($orderId, $customer)
     {
+
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
         $shippingCode = $this->dataHelper->getSessionData('shipping_code');
@@ -178,12 +197,20 @@ class Order
             $discountCode = $this->dataHelper->getSessionData('billmate_applied_discount_code');
             $actual_quote->setCouponCode($discountCode);
         }
-        
+
+
         if ($billmateShippingAddress) {
+
             $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
-        } else {
+        } else if ($billmateBillingAddress){
+
             $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+        } else{
+
+            return $actual_quote;
         }
+
+
 
         $shippingAddress = $actual_quote->getShippingAddress();
         if ($shippingCode !== null){
@@ -226,20 +253,34 @@ class Order
      */
     protected function createCart($orderId)
     {
+
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
 
         $customer = $this->getCustomer($this->getOrderData());
+
         $actualQuote = $this->createQuote($orderId, $customer);
+
 
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
 
         $cart->setCustomerEmail($customer->getEmail());
         $cart->getBillingAddress()->addData($billmateBillingAddress);
+        
+        
+
         if ($billmateShippingAddress){
+           
             $cart->getShippingAddress()->addData($billmateShippingAddress);
-        } else {
+        } else if ($billmateBillingAddress) {
+          
             $cart->getShippingAddress()->addData($billmateBillingAddress);
+        }
+        else{
+
+            $cart->setCustomerId(99999999999999);
+
+            return $cart;
         }
         $cart->getBillingAddress()->setCustomerId($customer->getId());
         $cart->getShippingAddress()->setCustomerId($customer->getId());
