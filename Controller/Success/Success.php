@@ -142,7 +142,7 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
         if (!$this->helper->getSessionData('bm-inc-id')){
 
             $orderId = $this->orderModel->setOrderData($orderData)->create();
-
+                //if no order id the order will be deleted from Magento and ca in Billmate
                 if (!$orderId) {
                     // Execute a cancel transfer
                     $this->helper->clearSession();

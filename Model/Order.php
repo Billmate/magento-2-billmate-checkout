@@ -118,10 +118,12 @@ class Order
 
             $actualCart = $this->createCart($orderId);
 
+            //if there is no billing or no shipping adress the order get cancelled.
             if($actualCart->getCustomerId() == 99999999999999){
-
                 return 0;
             }
+
+            //if there is no billing or no shipping adress the order get cancelled.
             if((!$this->dataHelper->getSessionData('billmate_shipping_address')) && (!$this->dataHelper->getSessionData('billmate_billing_address'))){
 
                 return 0;
@@ -144,9 +146,17 @@ class Order
             return 0;
         }
 
+
+
+        //if there is no product in the cart
+        if(!$actualCart->getAllVisibleItems()){
+            return 0;
+        }
+
         $orderId = $this->cartManagementInterface->placeOrder($actualCart->getId());
         $this->orderSent = 1;
         $order = $this->dataHelper->getOrderById($orderId);
+        
 
         if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
             $this->orderSender->send($order);
@@ -198,19 +208,16 @@ class Order
             $actual_quote->setCouponCode($discountCode);
         }
 
-
         if ($billmateShippingAddress) {
-
             $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
         } else if ($billmateBillingAddress){
-
             $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
-        } else{
+        } 
+        // If no shippin adress return qoute unfinished, order will be deleted i Sucess.
+        else { 
 
             return $actual_quote;
         }
-
-
 
         $shippingAddress = $actual_quote->getShippingAddress();
         if ($shippingCode !== null){
@@ -224,13 +231,13 @@ class Order
         $billmatePaymentMethod = $this->dataHelper->getPaymentMethod();
         $orderData = $this->getOrderData();
 
+     
+        
         $actual_quote->setPaymentMethod($billmatePaymentMethod);
         $actual_quote->getPayment()->setQuote($actual_quote);
         $actual_quote->getPayment()->importData([
             'method' => $billmatePaymentMethod
         ]);
-
-
 
         if (isset($orderData['payment_method_name'])) {
             $actual_quote->getPayment()->setAdditionalInformation(
@@ -276,12 +283,12 @@ class Order
           
             $cart->getShippingAddress()->addData($billmateBillingAddress);
         }
+        //Set a temporary id for program to know the order should be deleted.
         else{
-
             $cart->setCustomerId(99999999999999);
-
             return $cart;
         }
+        
         $cart->getBillingAddress()->setCustomerId($customer->getId());
         $cart->getShippingAddress()->setCustomerId($customer->getId());
         $cart->setCustomerId($customer->getId());
