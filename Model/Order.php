@@ -116,8 +116,8 @@ class Order
 
             // If there is no billing or no shipping adress the order get cancelled.
             if (
-                (!$this->dataHelper->getSessionData('billmate_shipping_address'))
-                && (!$this->dataHelper->getSessionData('billmate_billing_address'))
+                (!$this->dataHelper->getSessionData('billmate_shipping_address')) &&
+                (!$this->dataHelper->getSessionData('billmate_billing_address'))
             ) {
                 return 0;
             }
@@ -163,15 +163,15 @@ class Order
     }
 
     /**
+     * Creates quotes for order.
+     *
      * @param $orderId
      * @param $customer
-     * Creates qoutes for order.
      * @return mixed
      * @throws \Exception
      */
     protected function createQuote($orderId, $customer)
     {
-
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
         $shippingCode = $this->dataHelper->getSessionData('shipping_code');
@@ -195,9 +195,7 @@ class Order
             $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
         } else if ($billmateBillingAddress){
             $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
-        } 
-        // If no shippin adress return qoute unfinished, order will be deleted i Sucess.
-        else { 
+        } else { // If no shipping address return quote unfinished, order will be deleted i Success.
 
             return $actual_quote;
         }
@@ -213,9 +211,6 @@ class Order
 
         $billmatePaymentMethod = $this->dataHelper->getPaymentMethod();
         $orderData = $this->getOrderData();
-
-     
-        
         $actual_quote->setPaymentMethod($billmatePaymentMethod);
         $actual_quote->getPayment()->setQuote($actual_quote);
         $actual_quote->getPayment()->importData([
@@ -227,6 +222,7 @@ class Order
                 self::BM_ADDITIONAL_INFO_CODE, $orderData['payment_method_name']
             );
         }
+
         if (isset($orderData['payment_method_bm_code'])){
             $actual_quote->getPayment()->setAdditionalInformation(
                 self::BM_ADDITIONAL_PAYMENT_CODE, $orderData['payment_method_bm_code']
@@ -240,10 +236,13 @@ class Order
 
     /**
      * Create cart for order
+     *
+     * @param string $orderId
+     * @return array $cart
+     * @throws \Exception
      */
     protected function createCart($orderId)
     {
-
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
 
@@ -251,23 +250,16 @@ class Order
 
         $actualQuote = $this->createQuote($orderId, $customer);
 
-
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
 
         $cart->setCustomerEmail($customer->getEmail());
         $cart->getBillingAddress()->addData($billmateBillingAddress);
-        
-        
 
         if ($billmateShippingAddress){
-           
             $cart->getShippingAddress()->addData($billmateShippingAddress);
         } else if ($billmateBillingAddress) {
-          
             $cart->getShippingAddress()->addData($billmateBillingAddress);
-        }
-        //Set a temporary id for program to know the order should be deleted.
-        else{
+        } else { // Set a temporary id for shop to know the order should be deleted
             $cart->setCustomerId(99999999999999);
             return $cart;
         }
@@ -282,7 +274,6 @@ class Order
 
     /**
      * @param $orderData
-     *
      * @return \Magento\Customer\Api\Data\CustomerInterface
      */
     protected function getCustomer($orderData)
@@ -338,7 +329,7 @@ class Order
     protected function isReadyToHold()
     {
         $orderData = $this->getOrderData();
-        if(
+        if (
             in_array($orderData['payment_method_bm_code'], $this->getMethodsToHoldChecking()) &&
             $orderData['payment_bm_status'] == $this->getBmHoldStatus()
         ) {
@@ -350,7 +341,6 @@ class Order
 
     /**
      * @param $orderData
-     *
      * @return $this
      */
     public function setOrderData($orderData)
@@ -360,9 +350,7 @@ class Order
     }
 
     /**
-     * @param $orderData
-     *
-     * @return $this
+     * @return array
      */
     public function getOrderData()
     {
@@ -384,10 +372,12 @@ class Order
     {
         return $this->bmHoldStatus;
     }
+
+    /**
+     * @return bool
+     */
     public function isOrderSent()
     {
         return $this->orderSent;
     }
-
-    
 }
