@@ -74,7 +74,10 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
 	public function execute()
     {
         
+        
         $this->helper->setSessionData('billmate_checkout_id',null);
+
+        
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $registry = $objectManager->get('\Magento\Framework\Registry');
 
@@ -137,9 +140,13 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
         }
 
         if (!$this->helper->getSessionData('bm-inc-id')){
+
             $orderId = $this->orderModel->setOrderData($orderData)->create();
+                //if no order id the order will be deleted from Magento and ca in Billmate
                 if (!$orderId) {
                     // Execute a cancel transfer
+                    $this->helper->clearSession();
+
                     $values = array(
                         "number" => $requestData['data']['number']
                     );
@@ -149,12 +156,8 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
                     $order->delete();
                     $registry->unregister('isSecureArea'); 
 
-                    $this->helper->clearSession();
-
                     return $this->resultRedirectFactory->create()->setPath('billmatecheckout/success/error');
-                    throw new \Exception(
-                        __('An error occurred on the server. Please try to place the order again.')
-                    );
+                    
                 }
 
             $this->helper->setSessionData('bm_order_id', $orderId);
