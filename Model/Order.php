@@ -8,13 +8,9 @@ namespace Billmate\BillmateCheckout\Model;
 class Order
 {
     const BM_ADDITIONAL_INFO_CODE = 'bm_payment_method';
-
     const BM_ADDITIONAL_PAYMENT_CODE = 'payment_method_bm_code';
-
     const BM_INVOICE_ID_FIELD = 'billmate_invoice_id';
-
     const BM_TEST_MODE_FLAG = 'bm_test_mode';
-
     const BM_TEST_MODE_VALUE = 1;
 
     /**
@@ -22,6 +18,9 @@ class Order
      */
     protected $orderData;
 
+    /**
+     * @var bool
+     */
     protected $orderSent;
 
     /**
@@ -41,10 +40,6 @@ class Order
      * @var string
      */
     protected $bmHoldStatus = 'Pending';
-
-
-    protected $noBillingAdress = 'Pending';
-
 
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
@@ -92,15 +87,11 @@ class Order
     }
 
     /**
-     * @param        $orderData
      * @param string $orderId
-     * @param string $paymentID
-     *
      * @return int
      */
     public function create($orderId = '')
     {
-        
         try {
             $this->orderSent = 0;
             if (!$this->getOrderData()) {
@@ -118,22 +109,20 @@ class Order
 
             $actualCart = $this->createCart($orderId);
 
-            //if there is no billing or no shipping adress the order get cancelled.
-            if($actualCart->getCustomerId() == 99999999999999){
+            // If there is no billing or no shipping address the order get cancelled.
+            if ($actualCart->getCustomerId() == 99999999999999) {
                 return 0;
             }
 
-            //if there is no billing or no shipping adress the order get cancelled.
-            if((!$this->dataHelper->getSessionData('billmate_shipping_address')) && (!$this->dataHelper->getSessionData('billmate_billing_address'))){
-
+            // If there is no billing or no shipping adress the order get cancelled.
+            if (
+                (!$this->dataHelper->getSessionData('billmate_shipping_address'))
+                && (!$this->dataHelper->getSessionData('billmate_billing_address'))
+            ) {
                 return 0;
             }
-
-
         } catch (\Exception $e){
-           
-
-            $this->dataHelper->addLog([
+           $this->dataHelper->addLog([
                 'Could not create order',
                 '__FILE__' => __FILE__,
                 '__CLASS__' => __CLASS__,
@@ -146,24 +135,20 @@ class Order
             return 0;
         }
 
-
-
-        //if there is no product in the cart
-        if(!$actualCart->getAllVisibleItems()){
+        // If there is no product in the cart
+        if (!$actualCart->getAllVisibleItems()){
             return 0;
         }
 
         $orderId = $this->cartManagementInterface->placeOrder($actualCart->getId());
         $this->orderSent = 1;
         $order = $this->dataHelper->getOrderById($orderId);
-        
 
         if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
             $this->orderSender->send($order);
         }
 
         $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
-
         $orderState = $this->getOrderState();
         $order->setState($orderState)->setStatus($orderState);
         if ($this->dataHelper->getConfigHelper()->getTestMode()) {
@@ -174,9 +159,7 @@ class Order
         }
 
         $order->save();
-         
         return $orderId;
-
     }
 
     /**
