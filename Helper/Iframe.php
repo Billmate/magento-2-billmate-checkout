@@ -249,6 +249,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
             'country' => 'SE',
             'orderid' => $this->getQuote()->getReservedOrderId(),
         ];
+        
 
         if (!$this->_updateProcessRun) {
             $data['PaymentData']['callbackurl'] = $this->_getUrl('billmatecheckout/callback/callback');

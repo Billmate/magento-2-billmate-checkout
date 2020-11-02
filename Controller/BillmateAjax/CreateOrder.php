@@ -43,6 +43,7 @@ class CreateOrder extends \Magento\Framework\App\Action\Action
      */
 	public function execute()
     {
+		
 		if ($this->getRequest()->getParam('status') == 'Step2Loaded') {
 			if ($this->helper->getSessionData('billmate_email')){
                 $orderData = array(
@@ -60,13 +61,16 @@ class CreateOrder extends \Magento\Framework\App\Action\Action
 						'price' => $item->getPrice()
 					];
 				}
+
 				$orderId = $this->orderModel->setOrderData($orderData)->create();
+
                 $this->helper->setSessionData('bm_order_id', $orderId);
 				$this->helper->setSessionData('last_success_quote_id', $quote->getId());
 				$this->helper->setSessionData('last_quote_id', $quote->getId());
 				$this->helper->setSessionData('last_order_id', $orderId);
 
                 $result = $this->resultJsonFactory->create();
+
 				return $result->setData('checkout/onepage/success');
 			}
 		}
