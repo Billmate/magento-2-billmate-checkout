@@ -8,13 +8,9 @@ namespace Billmate\BillmateCheckout\Model;
 class Order
 {
     const BM_ADDITIONAL_INFO_CODE = 'bm_payment_method';
-
     const BM_ADDITIONAL_PAYMENT_CODE = 'payment_method_bm_code';
-
     const BM_INVOICE_ID_FIELD = 'billmate_invoice_id';
-
     const BM_TEST_MODE_FLAG = 'bm_test_mode';
-
     const BM_TEST_MODE_VALUE = 1;
 
     /**
@@ -22,6 +18,9 @@ class Order
      */
     protected $orderData;
 
+    /**
+     * @var bool
+     */
     protected $orderSent;
 
     /**
@@ -41,10 +40,6 @@ class Order
      * @var string
      */
     protected $bmHoldStatus = 'Pending';
-
-
-    protected $noBillingAdress = 'Pending';
-
 
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
@@ -92,15 +87,11 @@ class Order
     }
 
     /**
-     * @param        $orderData
      * @param string $orderId
-     * @param string $paymentID
-     *
      * @return int
      */
     public function create($orderId = '')
     {
-        
         try {
             $this->orderSent = 0;
             if (!$this->getOrderData()) {
@@ -118,22 +109,20 @@ class Order
 
             $actualCart = $this->createCart($orderId);
 
-            //if there is no billing or no shipping adress the order get cancelled.
-            if($actualCart->getCustomerId() == 99999999999999){
+            // If there is no billing or no shipping address the order get cancelled.
+            if ($actualCart->getCustomerId() == 99999999999999) {
                 return 0;
             }
 
-            //if there is no billing or no shipping adress the order get cancelled.
-            if((!$this->dataHelper->getSessionData('billmate_shipping_address')) && (!$this->dataHelper->getSessionData('billmate_billing_address'))){
-
+            // If there is no billing or no shipping adress the order get cancelled.
+            if (
+                (!$this->dataHelper->getSessionData('billmate_shipping_address')) &&
+                (!$this->dataHelper->getSessionData('billmate_billing_address'))
+            ) {
                 return 0;
             }
-
-
         } catch (\Exception $e){
-           
-
-            $this->dataHelper->addLog([
+           $this->dataHelper->addLog([
                 'Could not create order',
                 '__FILE__' => __FILE__,
                 '__CLASS__' => __CLASS__,
@@ -146,24 +135,20 @@ class Order
             return 0;
         }
 
-
-
-        //if there is no product in the cart
-        if(!$actualCart->getAllVisibleItems()){
+        // If there is no product in the cart
+        if (!$actualCart->getAllVisibleItems()){
             return 0;
         }
 
         $orderId = $this->cartManagementInterface->placeOrder($actualCart->getId());
         $this->orderSent = 1;
         $order = $this->dataHelper->getOrderById($orderId);
-        
 
         if (version_compare($this->metaDataInterface->getVersion(), '2.3.0', '<')) {
             $this->orderSender->send($order);
         }
 
         $this->dataHelper->setSessionData('bm-inc-id', $order->getIncrementId());
-
         $orderState = $this->getOrderState();
         $order->setState($orderState)->setStatus($orderState);
         if ($this->dataHelper->getConfigHelper()->getTestMode()) {
@@ -174,21 +159,19 @@ class Order
         }
 
         $order->save();
-         
         return $orderId;
-
     }
 
     /**
+     * Creates quotes for order.
+     *
      * @param $orderId
      * @param $customer
-     * Creates qoutes for order.
      * @return mixed
      * @throws \Exception
      */
     protected function createQuote($orderId, $customer)
     {
-
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
         $shippingCode = $this->dataHelper->getSessionData('shipping_code');
@@ -219,7 +202,6 @@ class Order
             return $actual_quote;
         }
 
-
         $shippingAddress = $actual_quote->getShippingAddress();
         if ($shippingCode !== null){
             $this->shippingRate->setCode($shippingCode)->getPrice();
@@ -231,22 +213,18 @@ class Order
 
         $billmatePaymentMethod = $this->dataHelper->getPaymentMethod();
         $orderData = $this->getOrderData();
-
-     
-        
         $actual_quote->setPaymentMethod($billmatePaymentMethod);
         $actual_quote->getPayment()->setQuote($actual_quote);
         $actual_quote->getPayment()->importData([
             'method' => $billmatePaymentMethod
         ]);
 
-
-
         if (isset($orderData['payment_method_name'])) {
             $actual_quote->getPayment()->setAdditionalInformation(
                 self::BM_ADDITIONAL_INFO_CODE, $orderData['payment_method_name']
             );
         }
+
         if (isset($orderData['payment_method_bm_code'])){
             $actual_quote->getPayment()->setAdditionalInformation(
                 self::BM_ADDITIONAL_PAYMENT_CODE, $orderData['payment_method_bm_code']
@@ -260,10 +238,13 @@ class Order
 
     /**
      * Create cart for order
+     *
+     * @param string $orderId
+     * @return array $cart
+     * @throws \Exception
      */
     protected function createCart($orderId)
     {
-
         $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
         $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
 
@@ -271,23 +252,16 @@ class Order
 
         $actualQuote = $this->createQuote($orderId, $customer);
 
-
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
 
         $cart->setCustomerEmail($customer->getEmail());
         $cart->getBillingAddress()->addData($billmateBillingAddress);
-        
-        
 
         if ($billmateShippingAddress){
-           
             $cart->getShippingAddress()->addData($billmateShippingAddress);
         } else if ($billmateBillingAddress) {
-          
             $cart->getShippingAddress()->addData($billmateBillingAddress);
-        }
-        //Set a temporary id for program to know the order should be deleted.
-        else{
+        } else { // Set a temporary id for shop to know the order should be deleted
             $cart->setCustomerId(99999999999999);
             return $cart;
         }
@@ -302,7 +276,6 @@ class Order
 
     /**
      * @param $orderData
-     *
      * @return \Magento\Customer\Api\Data\CustomerInterface
      */
     protected function getCustomer($orderData)
@@ -358,7 +331,7 @@ class Order
     protected function isReadyToHold()
     {
         $orderData = $this->getOrderData();
-        if(
+        if (
             in_array($orderData['payment_method_bm_code'], $this->getMethodsToHoldChecking()) &&
             $orderData['payment_bm_status'] == $this->getBmHoldStatus()
         ) {
@@ -370,7 +343,6 @@ class Order
 
     /**
      * @param $orderData
-     *
      * @return $this
      */
     public function setOrderData($orderData)
@@ -380,9 +352,7 @@ class Order
     }
 
     /**
-     * @param $orderData
-     *
-     * @return $this
+     * @return array
      */
     public function getOrderData()
     {
@@ -404,10 +374,12 @@ class Order
     {
         return $this->bmHoldStatus;
     }
+
+    /**
+     * @return bool
+     */
     public function isOrderSent()
     {
         return $this->orderSent;
     }
-
-    
 }

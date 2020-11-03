@@ -121,8 +121,6 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
      */
     public function execute()
     {
-      
-
         $jsonResponse = $this->resultJsonFactory->create();
         $requestData = $this->getBmRequestData();
         $hash = $this->getHashCode($requestData);
@@ -148,21 +146,22 @@ class Callback extends \Billmate\BillmateCheckout\Controller\FrontCore
                 $respMessage = "ignoring first callback";
                 return $jsonResponse->setData($respMessage);
             }
-
+            if (!$this->helper->getSessionData('bm-inc-id')){
+                $respMessage = $this->resultRedirectFactory->create()->setPath('billmatecheckout/success/error');
+                return $jsonResponse->setData($respMessage);
+            }
             $order = $this->helper->getOrderByIncrementId($paymentInfo['PaymentData']['orderid']);
             if (!is_string($order->getIncrementId())) {
-                
-
                 if (!$this->helper->getSessionData('bm-inc-id')){
                                 
                     $respMessage = $this->resultRedirectFactory->create()->setPath('billmatecheckout/success/error');
                     return $jsonResponse->setData($respMessage);
                 }
 
-
                 $orderInfo = $this->getOrderInfo($paymentInfo);
                 $order_id = $this->orderModel->setOrderData($orderInfo)->create($paymentInfo['PaymentData']['orderid']);
                 if (!$order_id) {
+
                     throw new \Exception(
                         __('An error occurred on the server. Please try to place the order again.')
                     );
