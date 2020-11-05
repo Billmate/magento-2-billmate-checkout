@@ -172,66 +172,85 @@ class Order
      */
     protected function createQuote($orderId, $customer)
     {
-        $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
-        $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
-        $shippingCode = $this->dataHelper->getSessionData('shipping_code');
+        try {
+            $billmateShippingAddress = $this->dataHelper->getSessionData('billmate_shipping_address');
+            $billmateBillingAddress = $this->dataHelper->getSessionData('billmate_billing_address');
+            $shippingCode = $this->dataHelper->getSessionData('shipping_code');
 
-        $actual_quote = $this->quoteCollectionFactory->create()
-            ->addFieldToFilter("reserved_order_id", $orderId)->getFirstItem();
+            $actual_quote = $this->quoteCollectionFactory->create()
+                ->addFieldToFilter("reserved_order_id", $orderId)->getFirstItem();
 
-        $store = $this->_storeManager->getStore();
+            $store = $this->_storeManager->getStore();
 
-        $actual_quote->setCustomerEmail($customer->getEmail());
-        $actual_quote->setStore($store);
-        $actual_quote->setCurrency();
-        $actual_quote->assignCustomer($customer);
+            $actual_quote->setCustomerEmail($customer->getEmail());
+            $actual_quote->setStore($store);
+            $actual_quote->setCurrency();
+            $actual_quote->assignCustomer($customer);
 
-        if ($this->dataHelper->getSessionData('billmate_applied_discount_code')) {
-            $discountCode = $this->dataHelper->getSessionData('billmate_applied_discount_code');
-            $actual_quote->setCouponCode($discountCode);
+            if ($this->dataHelper->getSessionData('billmate_applied_discount_code')) {
+                $discountCode = $this->dataHelper->getSessionData('billmate_applied_discount_code');
+                $actual_quote->setCouponCode($discountCode);
+            }
+
+            if ($billmateShippingAddress) {
+                $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
+            } else {
+                if ($billmateBillingAddress) {
+                    $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+                } else {
+                    if (count($this->getFallBackAddressInformation()) > 0) {
+                        $actual_quote->getShippingAddress()->addData($this->getFallBackAddressInformation());
+                    } else { // If no shipping address return quote unfinished, order will be deleted i Success.
+                        return $actual_quote;
+                    }
+                }
+            }
+
+            $shippingAddress = $actual_quote->getShippingAddress();
+            if ($shippingCode !== null) {
+                $this->shippingRate->setCode($shippingCode)->getPrice();
+                $shippingAddress->setCollectShippingRates(true)
+                    ->collectShippingRates()
+                    ->setShippingMethod($shippingCode);
+                $actual_quote->getShippingAddress()->addShippingRate($this->shippingRate);
+            }
+
+            $billmatePaymentMethod = $this->dataHelper->getPaymentMethod();
+            $orderData = $this->getOrderData();
+            $actual_quote->setPaymentMethod($billmatePaymentMethod);
+            $actual_quote->getPayment()->setQuote($actual_quote);
+            $actual_quote->getPayment()->importData([
+                'method' => $billmatePaymentMethod
+            ]);
+
+            if (isset($orderData['payment_method_name'])) {
+                $actual_quote->getPayment()->setAdditionalInformation(
+                    self::BM_ADDITIONAL_INFO_CODE, $orderData['payment_method_name']
+                );
+            }
+
+            if (isset($orderData['payment_method_bm_code'])) {
+                $actual_quote->getPayment()->setAdditionalInformation(
+                    self::BM_ADDITIONAL_PAYMENT_CODE, $orderData['payment_method_bm_code']
+                );
+            }
+
+            $actual_quote->setReservedOrderId($orderId);
+            $actual_quote->save();
+        } catch (\Exception $e){
+            $this->dataHelper->addLog([
+                'Could not create quote',
+                '__FILE__' => __FILE__,
+                '__CLASS__' => __CLASS__,
+                '__FUNCTION__' => __FUNCTION__,
+                '__LINE__' => __LINE__,
+                'exception.message' => $e->getMessage(),
+                'exception.file' => $e->getFile(),
+                'exception.line' => $e->getLine(),
+            ]);
+            return 0;
         }
 
-        if ($billmateShippingAddress) {
-            $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
-        } else if ($billmateBillingAddress){
-            $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
-        } else if (count($this->getFallBackAddressInformation()) > 0) {
-            $actual_quote->getShippingAddress()->addData($this->getFallBackAddressInformation());
-        } else { // If no shipping address return quote unfinished, order will be deleted i Success.
-            return $actual_quote;
-        }
-
-        $shippingAddress = $actual_quote->getShippingAddress();
-        if ($shippingCode !== null){
-            $this->shippingRate->setCode($shippingCode)->getPrice();
-            $shippingAddress->setCollectShippingRates(true)
-                ->collectShippingRates()
-                ->setShippingMethod($shippingCode);
-            $actual_quote->getShippingAddress()->addShippingRate($this->shippingRate);
-        }
-
-        $billmatePaymentMethod = $this->dataHelper->getPaymentMethod();
-        $orderData = $this->getOrderData();
-        $actual_quote->setPaymentMethod($billmatePaymentMethod);
-        $actual_quote->getPayment()->setQuote($actual_quote);
-        $actual_quote->getPayment()->importData([
-            'method' => $billmatePaymentMethod
-        ]);
-
-        if (isset($orderData['payment_method_name'])) {
-            $actual_quote->getPayment()->setAdditionalInformation(
-                self::BM_ADDITIONAL_INFO_CODE, $orderData['payment_method_name']
-            );
-        }
-
-        if (isset($orderData['payment_method_bm_code'])){
-            $actual_quote->getPayment()->setAdditionalInformation(
-                self::BM_ADDITIONAL_PAYMENT_CODE, $orderData['payment_method_bm_code']
-            );
-        }
-
-        $actual_quote->setReservedOrderId($orderId);
-        $actual_quote->save();
         return $actual_quote;
     }
 
