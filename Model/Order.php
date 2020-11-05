@@ -122,7 +122,7 @@ class Order
                 return 0;
             }
         } catch (\Exception $e){
-           $this->dataHelper->addLog([
+            $this->dataHelper->addLog([
                 'Could not create order',
                 '__FILE__' => __FILE__,
                 '__CLASS__' => __CLASS__,
@@ -195,8 +195,9 @@ class Order
             $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
         } else if ($billmateBillingAddress){
             $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+        } else if (count($this->getFallBackAddressInformation()) > 0) {
+            $actual_quote->getShippingAddress()->addData($this->getFallBackAddressInformation());
         } else { // If no shipping address return quote unfinished, order will be deleted i Success.
-
             return $actual_quote;
         }
 
@@ -235,6 +236,31 @@ class Order
     }
 
     /**
+     * Get address information when no other is present, if session is dead.
+     *
+     * @return array
+     */
+    private function getFallBackAddressInformation()
+    {
+        $fallbackAddressInformation = [];
+        $orderData = $this->getOrderData();
+        if ($orderData && isset($orderData['shipping_address'])) {
+            $fallbackAddressInformation = [
+                'firstname' => (isset($orderData['firstname'])) ? $orderData['firstname'] : '',
+                'lastname' => (isset($orderData['lastname'])) ? $orderData['lastname'] : '',
+                'street' =>(isset($orderData['street'])) ? $orderData['street'] : '',
+                'city' => (isset($orderData['city'])) ? $orderData['city'] : '',
+                'postcode' => (isset($orderData['zip'])) ? $orderData['zip'] : '',
+                'country_id' => (isset($orderData['country'])) ? $orderData['country'] : '',
+                'telephone' => (isset($orderData['phone'])) ? $orderData['phone'] : '',
+                'email' => (isset($orderData['email'])) ? $orderData['email'] : '',
+            ];
+        }
+
+        return $fallbackAddressInformation;
+    }
+
+    /**
      * Create cart for order
      *
      * @param string $orderId
@@ -253,17 +279,24 @@ class Order
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
 
         $cart->setCustomerEmail($customer->getEmail());
-        $cart->getBillingAddress()->addData($billmateBillingAddress);
+
+        if ($billmateBillingAddress) {
+            $cart->getBillingAddress()->addData($billmateBillingAddress);
+        } else if (count($this->getFallBackAddressInformation()) > 0) {
+            $cart->getBillingAddress()->addData($this->getFallBackAddressInformation());
+        }
 
         if ($billmateShippingAddress){
             $cart->getShippingAddress()->addData($billmateShippingAddress);
         } else if ($billmateBillingAddress) {
             $cart->getShippingAddress()->addData($billmateBillingAddress);
+        } else if (count($this->getFallBackAddressInformation()) > 0) {
+            $cart->getShippingAddress()->addData($this->getFallBackAddressInformation());
         } else { // Set a temporary id for shop to know the order should be deleted
             $cart->setCustomerId(99999999999999);
             return $cart;
         }
-        
+
         $cart->getBillingAddress()->setCustomerId($customer->getId());
         $cart->getShippingAddress()->setCustomerId($customer->getId());
         $cart->setCustomerId($customer->getId());
