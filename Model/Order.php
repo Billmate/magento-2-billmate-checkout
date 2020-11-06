@@ -194,16 +194,13 @@ class Order
 
             if ($billmateShippingAddress) {
                 $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
+            } else if ($billmateBillingAddress) {
+                $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+            } else if (count($this->getFallBackAddressInformation()) > 0) {
+                $actual_quote->getShippingAddress()->addData($this->getFallBackAddressInformation());
             } else {
-                if ($billmateBillingAddress) {
-                    $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
-                } else {
-                    if (count($this->getFallBackAddressInformation()) > 0) {
-                        $actual_quote->getShippingAddress()->addData($this->getFallBackAddressInformation());
-                    } else { // If no shipping address return quote unfinished, order will be deleted i Success.
-                        return $actual_quote;
-                    }
-                }
+                // If no shipping address return quote unfinished, order will be deleted i Success.
+                return $actual_quote;
             }
 
             $shippingAddress = $actual_quote->getShippingAddress();
