@@ -97,7 +97,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
 	protected function getBillingAddress()
     {
         $customerAddress = $this->getRequest()->getParam('Customer');
-        $billingAddress = $this->getRequest()->getParam('billingAddress',[]);
+        $billingAddress = $customerAddress['Billing'];
         $billingFormatted = [];
         if (isset($customerAddress["Billing"]) && $customerAddress["Billing"]) {
             $billingFormatted = [
@@ -136,7 +136,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
     protected function getShippingAddress()
     {
         $customerAddress = $this->getRequest()->getParam('Customer');
-        $shippingAddress = $this->getRequest()->getParam('shippingAddress',[]);
+        $shippingAddress = $customerAddress['Shipping'];
         $shippingFormatted = [];
         if ($shippingAddress) {
             if (isset($shippingAddress['country'])) {
