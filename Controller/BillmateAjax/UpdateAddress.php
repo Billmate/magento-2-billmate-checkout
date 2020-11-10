@@ -144,7 +144,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
             } else {
                 $country = $this->helper->getSessionData('billmate_country');
             }
-	    if (array_count_values($shippingAddress) > 2){
+            if (count($shippingAddress) > 2) {
                 $shippingFormatted = [
                     'firstname'=> $shippingAddress['firstname'],
                     'lastname'=> $shippingAddress['lastname'],
