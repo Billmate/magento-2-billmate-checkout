@@ -144,15 +144,28 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
             } else {
                 $country = $this->helper->getSessionData('billmate_country');
             }
-            $shippingFormatted = [
-                'firstname'=> $shippingAddress['firstname'],
-                'lastname'=> $shippingAddress['lastname'],
-                'street'=> $shippingAddress['street'],
-                'city'=> $shippingAddress['city'],
-                'country_id'=>$country,
-                'postcode'=> $shippingAddress['zip'],
-                'company'=> $shippingAddress['company']??''
-            ];
+	    if (array_count_values($shippingAddress) > 2){
+                $shippingFormatted = [
+                    'firstname'=> $shippingAddress['firstname'],
+                    'lastname'=> $shippingAddress['lastname'],
+                    'street'=> $shippingAddress['street'],
+                    'city'=> $shippingAddress['city'],
+                    'country_id'=>$country,
+                    'postcode'=> $shippingAddress['zip'],
+                    'company'=> $shippingAddress['company']??''
+                ];
+            }
+            else {
+                $shippingFormatted = [
+                    'firstname'=> $customerAddress['Billing']['firstname'],
+                    'lastname'=> $customerAddress['Billing']['lastname'],
+                    'street'=> $customerAddress['Billing']['street'],
+                    'city'=> $customerAddress['Billing']['city'],
+                    'country_id'=> $customerAddress['Billing']['country'],
+                    'postcode'=> $customerAddress['Billing']['zip'],
+                    'company'=> $customerAddress['Billing']['company']??''
+                ];
+            }
         } elseif ($customerAddress) {
             if (isset($customerAddress['street'])) {
                 $shippingFormatted = [
