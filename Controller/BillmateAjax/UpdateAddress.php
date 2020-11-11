@@ -97,7 +97,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
 	protected function getBillingAddress()
     {
         $customerAddress = $this->getRequest()->getParam('Customer');
-        $billingAddress = $this->getRequest()->getParam('billingAddress',[]);
+        $billingAddress = $customerAddress['Billing'];
         $billingFormatted = [];
         if (isset($customerAddress["Billing"]) && $customerAddress["Billing"]) {
             $billingFormatted = [
@@ -136,7 +136,7 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
     protected function getShippingAddress()
     {
         $customerAddress = $this->getRequest()->getParam('Customer');
-        $shippingAddress = $this->getRequest()->getParam('shippingAddress',[]);
+        $shippingAddress = $customerAddress['Shipping'];
         $shippingFormatted = [];
         if ($shippingAddress) {
             if (isset($shippingAddress['country'])) {
@@ -144,15 +144,28 @@ class UpdateAddress extends \Magento\Framework\App\Action\Action {
             } else {
                 $country = $this->helper->getSessionData('billmate_country');
             }
-            $shippingFormatted = [
-                'firstname'=> $shippingAddress['firstname'],
-                'lastname'=> $shippingAddress['lastname'],
-                'street'=> $shippingAddress['street'],
-                'city'=> $shippingAddress['city'],
-                'country_id'=>$country,
-                'postcode'=> $shippingAddress['zip'],
-                'company'=> $shippingAddress['company']??''
-            ];
+            if (count($shippingAddress) > 2) {
+                $shippingFormatted = [
+                    'firstname'=> $shippingAddress['firstname'],
+                    'lastname'=> $shippingAddress['lastname'],
+                    'street'=> $shippingAddress['street'],
+                    'city'=> $shippingAddress['city'],
+                    'country_id'=>$country,
+                    'postcode'=> $shippingAddress['zip'],
+                    'company'=> $shippingAddress['company']??''
+                ];
+            }
+            else {
+                $shippingFormatted = [
+                    'firstname'=> $customerAddress['Billing']['firstname'],
+                    'lastname'=> $customerAddress['Billing']['lastname'],
+                    'street'=> $customerAddress['Billing']['street'],
+                    'city'=> $customerAddress['Billing']['city'],
+                    'country_id'=> $customerAddress['Billing']['country'],
+                    'postcode'=> $customerAddress['Billing']['zip'],
+                    'company'=> $customerAddress['Billing']['company']??''
+                ];
+            }
         } elseif ($customerAddress) {
             if (isset($customerAddress['street'])) {
                 $shippingFormatted = [
