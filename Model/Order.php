@@ -255,17 +255,19 @@ class Order
         $cart = $this->cartRepositoryInterface->get($actualQuote->getId());
 
         $cart->setCustomerEmail($customer->getEmail());
-        $cart->getBillingAddress()->addData($billmateBillingAddress);
-
-        if ($billmateShippingAddress){
-            $cart->getShippingAddress()->addData($billmateShippingAddress);
-        } else if ($billmateBillingAddress) {
-            $cart->getShippingAddress()->addData($billmateBillingAddress);
-        } else { // Set a temporary id for shop to know the order should be deleted
-            $cart->setCustomerId(99999999999999);
-            return $cart;
+        if (!is_string($cart->getBillingAddress()->getFirstname())) {
+            $cart->getBillingAddress()->addData($billmateBillingAddress);
         }
-        
+        if (!is_string($cart->getShippingAddress()->getFirstname())) {
+            if ($billmateShippingAddress){
+                $cart->getShippingAddress()->addData($billmateShippingAddress);
+            } else if ($billmateBillingAddress) {
+                $cart->getShippingAddress()->addData($billmateBillingAddress);
+            } else { // Set a temporary id for shop to know the order should be deleted
+                $cart->setCustomerId(99999999999999);
+                return $cart;
+            }
+        }
         $cart->getBillingAddress()->setCustomerId($customer->getId());
         $cart->getShippingAddress()->setCustomerId($customer->getId());
         $cart->setCustomerId($customer->getId());
