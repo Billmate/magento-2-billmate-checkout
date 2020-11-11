@@ -256,7 +256,13 @@ class Order
 
         $cart->setCustomerEmail($customer->getEmail());
         if (!is_string($cart->getBillingAddress()->getFirstname())) {
-            $cart->getBillingAddress()->addData($billmateBillingAddress);
+            if ($billmateBillingAddress){
+                $cart->getBillingAddress()->addData($billmateBillingAddress);
+            }
+            else {
+                $cart->setCustomerId(99999999999999);
+                return $cart;
+            }
         }
         if (!is_string($cart->getShippingAddress()->getFirstname())) {
             if ($billmateShippingAddress){
