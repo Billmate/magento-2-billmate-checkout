@@ -191,12 +191,14 @@ class Order
             $actual_quote->setCouponCode($discountCode);
         }
 
-        if ($billmateShippingAddress) {
-            $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
-        } else if ($billmateBillingAddress){
-            $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+        // Check that shipping address data is present
+        if (!is_string($actual_quote->getShippingAddress()->getFirstname())) {
+            if ($billmateShippingAddress) {
+                $actual_quote->getShippingAddress()->addData($billmateShippingAddress);
+            } else if ($billmateBillingAddress){
+                $actual_quote->getShippingAddress()->addData($billmateBillingAddress);
+            }
         } else { // If no shipping address return quote unfinished, order will be deleted i Success.
-
             return $actual_quote;
         }
 
