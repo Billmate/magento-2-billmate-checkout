@@ -172,8 +172,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         $quote->getShippingAddress()->addData($shippingAddress);
-        $quote->getShippingAddress()->save();
-        $quote->save();
         $this->setSessionData('billmate_shipping_address',$shippingAddress);
 	}
 
@@ -196,8 +194,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         ];
 
         $this->getQuote()->getBillingAddress()->addData($billingAddress);
-        $this->getQuote()->getBillingAddress()->save();
-        $this->getQuote()->save();
         $this->setSessionData('billmate_billing_address', $billingAddress);
         $this->setSessionData('billmate_telephone', $shippingData['telephone']);
         if ($shippingData['email']) {
