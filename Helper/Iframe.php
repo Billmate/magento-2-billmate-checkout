@@ -149,6 +149,14 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
         $shippingTaxRate = $this->getShippingTaxRate();
         $invoiceFeeHandling = $this->getInvoiceFeeHandling();
 
+        $subTotalWithoutTax = 0;
+	foreach ($data['Articles'] as $article) {
+            if ($article['artnr'] != '--freetext--' && isset($article['withouttax'])){
+                $subTotalWithoutTax += $article['withouttax'];
+            }
+        }
+        $cartShippingWithoutTax = $this->toCents($shippingAddressTotal->getShippingAmount());
+        $cartHandlingWithoutTax = $this->toCents($invoiceFeeHandling['amount']);
         $data['Cart'] = [
             'Shipping' => [
                 'withouttax' => $this->toCents($shippingAddressTotal->getShippingAmount()),
@@ -162,10 +170,7 @@ class Iframe extends \Magento\Framework\App\Helper\AbstractHelper
                 'taxrate'    => $invoiceFeeHandling['rate']
             ],
             'Total' => [
-                'withouttax' => $this->toCents($shippingAddressTotal->getGrandTotal()
-                    - $shippingAddressTotal->getTaxAmount() - $shippingAddressTotal->getDiscountTaxCompensationAmount()
-                    + $invoiceFeeHandling['amount']
-                ),
+                'withouttax' => (intval($subTotalWithoutTax) + intval($cartShippingWithoutTax) + intval($cartHandlingWithoutTax)),
                 'tax' => $this->toCents(
                     $shippingAddressTotal->getTaxAmount() + $shippingAddressTotal->getDiscountTaxCompensationAmount()
                     + $invoiceFeeHandling['tax_amount']
