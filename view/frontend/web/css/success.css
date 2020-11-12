@@ -10,7 +10,8 @@ div#billmate-success {
 	margin: 14px 10px 10px 0;
 }
 div#billmate-success iframe{
-	width: 400px;
+	min-width: 400px;
+	width: 100%;
 	height: 850px;
 	border: 1px solid #f0f0f0;
 }
