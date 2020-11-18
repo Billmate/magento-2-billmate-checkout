@@ -309,9 +309,10 @@ class Order
                 ->setPassword($_password);
             $customer->save();
         }
-        $customer->setEmail($orderData['email']);
-        $customer->save();
-
+        else {
+            $customer->setEmail($orderData['email']);
+            $customer->save();
+        }
         return $this->customerRepository->getById($customer->getEntityId());
     }
 
