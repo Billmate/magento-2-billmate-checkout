@@ -19,7 +19,7 @@ abstract class FrontCore extends AbsModified
             return $postData;
         }
 
-        $jsonBodyRequest = file_get_contents('php://input');
+        $jsonBodyRequest = $this->file_get_contents('php://input');
         if ($jsonBodyRequest) {
             return json_decode($jsonBodyRequest, true);
         }
