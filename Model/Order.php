@@ -102,6 +102,11 @@ class Order
                 $orderId = $this->dataHelper->getQuote()->getReservedOrderId();
             }
 
+            //Checks if session ended.
+            if($orderId == ''){
+                return 0;
+            }
+            
             $exOrder = $this->dataHelper->getOrderByIncrementId($orderId);
             if ($exOrder->getIncrementId()){
                 return;
