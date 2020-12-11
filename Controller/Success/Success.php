@@ -99,7 +99,9 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
                 if (!$billmateShipping) {
                     $billmateShipping = ($paymentInfo['Customer']['Shipping']) ? $paymentInfo['Customer']['Shipping'] : $paymentInfo['Customer']['Billing'];
                 }
-
+                if ($this->helper->getSessionData('billmate_shipping_address')){
+                    $billmateShipping = $this->helper->getSessionData('billmate_billing_address');
+                }
                 $orderData = array(
                     'email' => $billmateEmail,
                     'shipping_address' => $billmateShipping,
