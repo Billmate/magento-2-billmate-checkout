@@ -93,11 +93,11 @@ class Success extends \Billmate\BillmateCheckout\Controller\FrontCore
 
             if (!$this->helper->getSessionData('bm-inc-id')) {
 
-                $billmateEmail = ($this->helper->getSessionData('billmate_email')) ? $this->helper->getSessionData('billmate_email') : array_map("utf8_decode", $paymentInfo['Customer']['Billing']['email']);
+                $billmateEmail = ($this->helper->getSessionData('billmate_email')) ? $this->helper->getSessionData('billmate_email') : utf8_decode($paymentInfo['Customer']['Billing']['email']);
                 $billmateShipping = ($this->helper->getSessionData('billmate_billing_address')) ? $this->helper->getSessionData('billmate_billing_address') : array_map("utf8_decode", $paymentInfo['Customer']['Billing']);
                 $billmateStatus = ($requestData['data']['status']) ? $requestData['data']['status'] : array_map("utf8_decode", $paymentInfo['PaymentData']['status']);
                 if (!$billmateShipping) {
-                    $billmateShipping = (array_map("utf8_decode", $paymentInfo['Customer']['Shipping'])) ? array_map("utf8_decode", $paymentInfo['Customer']['Shipping']) : array_map("utf8_decode", $paymentInfo['Customer']['Billing'] );
+                    $billmateShipping = (array_map("utf8_decode", $paymentInfo['Customer']['Shipping'])) ? array_map("utf8_decode", $paymentInfo['Customer']['Shipping']) : array_map("utf8_decode", $paymentInfo['Customer']['Billing']);
                 }
                 if ($this->helper->getSessionData('billmate_shipping_address')){
                     $billmateShipping = $this->helper->getSessionData('billmate_billing_address');
