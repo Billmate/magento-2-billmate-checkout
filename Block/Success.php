@@ -48,7 +48,9 @@ class Success extends \Magento\Framework\View\Element\Template
      */
     public function getSucessUrl()
     {
-        return $this->helper->getSessionData('iframe_url');
+        $iframedata = $this->helper->getSessionData('iframe_url');
+        $this->clearSession();
+        return $iframedata;
     }
 
     public function clearSession(){
