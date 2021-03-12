@@ -98,18 +98,18 @@ class Order
                 throw new \Exception('The request does not contain order data');
             }
 
-            if ($orderId == '') {
+            if (!$orderId) {
                 $orderId = $this->dataHelper->getQuote()->getReservedOrderId();
             }
 
             //Checks if session ended.
-            if($orderId == ''){
+            if ($orderId === '') {
                 return 0;
             }
-            
+
             $exOrder = $this->dataHelper->getOrderByIncrementId($orderId);
-            if ($exOrder->getIncrementId()){
-                return;
+            if ($exOrder->getIncrementId()) {
+                return 0;
             }
 
             $actualCart = $this->createCart($orderId);
@@ -268,7 +268,7 @@ class Order
             $cart->setCustomerId(99999999999999);
             return $cart;
         }
-        
+
         $cart->getBillingAddress()->setCustomerId($customer->getId());
         $cart->getShippingAddress()->setCustomerId($customer->getId());
         $cart->setCustomerId($customer->getId());

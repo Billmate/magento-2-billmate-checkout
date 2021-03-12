@@ -18,11 +18,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $shippingRate;
 
     /**
-     * @var \Magento\Checkout\Model\Session
-     */
-    protected $checkoutSession;
-
-    /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
     protected $quote;
@@ -76,24 +71,33 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $configHelper;
 
     /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    protected $checkoutSession;
+
+    /**
+     * @var \Magento\Checkout\Model\SessionFactory
+     */
+    protected $checkoutSessionFactory;
+
+    /**
      * Data constructor.
-     *
-     * @param \Magento\Framework\App\Helper\Context      $context
-     * @param \Magento\Quote\Model\Quote\Address\Rate    $shippingRate
-     * @param \Magento\Sales\Api\Data\OrderInterface     $order
-     * @param \Magento\Checkout\Model\Session            $_checkoutSession
-     * @param \Magento\Quote\Model\QuoteFactory          $quote
-     * @param \Magento\Framework\View\LayoutFactory      $layoutFactory
-     * @param ProductMetadataInterface                   $metaData
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Quote\Model\Quote\Address\Rate $shippingRate
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory
+     * @param \Magento\Quote\Model\QuoteFactory $quote
+     * @param \Magento\Framework\View\LayoutFactory $layoutFactory
+     * @param ProductMetadataInterface $metaData
      * @param \Magento\Quote\Model\Quote\TotalsCollector $totalsCollector
-     * @param ModuleListInterface                        $moduleList
-     * @param \Billmate\BillmateCheckout\Helper\Config   $configHelper
+     * @param ModuleListInterface $moduleList
+     * @param Config $configHelper
      */
     public function __construct(
 		\Magento\Framework\App\Helper\Context $context,
 		\Magento\Quote\Model\Quote\Address\Rate $shippingRate,
 		\Magento\Sales\Api\Data\OrderInterface $order,
-		\Magento\Checkout\Model\Session $_checkoutSession,
+		\Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,
 		\Magento\Quote\Model\QuoteFactory $quote,
         \Magento\Framework\View\LayoutFactory $layoutFactory,
         ProductMetadataInterface $metaData,
@@ -103,7 +107,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	){
         $this->orderInterface = $order;
         $this->shippingRate = $shippingRate;
-        $this->checkoutSession = $_checkoutSession;
+        $this->checkoutSessionFactory = $checkoutSessionFactory;
         $this->quote = $quote;
         $this->logger = $context->getLogger();
         $this->metaData = $metaData;
@@ -254,6 +258,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		$this->checkoutSession->clearQuote();
 		$this->clearBmSession();
 		session_unset();
+		$this->checkoutSession = null;
 	}
 
 	public function clearBmSession()
@@ -384,6 +389,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function setSessionData($key, $value)
     {
+        $this->addLog(['method' => __METHOD__, 'key' => $key, 'value' => $value]);
         return $this->_getCheckoutSession()->setData($key, $value);
     }
 
@@ -395,7 +401,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getSessionData($key)
     {
-        return $this->_getCheckoutSession()->getData($key);
+        $value = $this->_getCheckoutSession()->getData($key);
+        $this->addLog(['method' => __METHOD__, 'key' => $key, 'value' => $value]);
+        return $value;
     }
 
     /**
@@ -403,6 +411,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected function _getCheckoutSession()
     {
+        if (!$this->checkoutSession) {
+            $this->checkoutSession = $this->checkoutSessionFactory->create();
+        }
         return $this->checkoutSession;
     }
 
@@ -449,6 +460,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         $logData = [
+            'pid' => getmypid(),
             'date' => date('Y-m-d H:i:s'),
         ];
         $logData = $logData + $data;
