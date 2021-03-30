@@ -18,11 +18,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $shippingRate;
 
     /**
-     * @var \Magento\Checkout\Model\Session
-     */
-    protected $checkoutSession;
-
-    /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
     protected $quote;
@@ -45,7 +40,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var float
      */
-	protected $shippingPrice;
+    protected $shippingPrice;
 
     /**
      * @var \Magento\Framework\View\LayoutFactory
@@ -76,34 +71,43 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $configHelper;
 
     /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    protected $checkoutSession;
+
+    /**
+     * @var \Magento\Checkout\Model\SessionFactory
+     */
+    protected $checkoutSessionFactory;
+
+    /**
      * Data constructor.
-     *
-     * @param \Magento\Framework\App\Helper\Context      $context
-     * @param \Magento\Quote\Model\Quote\Address\Rate    $shippingRate
-     * @param \Magento\Sales\Api\Data\OrderInterface     $order
-     * @param \Magento\Checkout\Model\Session            $_checkoutSession
-     * @param \Magento\Quote\Model\QuoteFactory          $quote
-     * @param \Magento\Framework\View\LayoutFactory      $layoutFactory
-     * @param ProductMetadataInterface                   $metaData
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Quote\Model\Quote\Address\Rate $shippingRate
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory
+     * @param \Magento\Quote\Model\QuoteFactory $quote
+     * @param \Magento\Framework\View\LayoutFactory $layoutFactory
+     * @param ProductMetadataInterface $metaData
      * @param \Magento\Quote\Model\Quote\TotalsCollector $totalsCollector
-     * @param ModuleListInterface                        $moduleList
-     * @param \Billmate\BillmateCheckout\Helper\Config   $configHelper
+     * @param ModuleListInterface $moduleList
+     * @param Config $configHelper
      */
     public function __construct(
-		\Magento\Framework\App\Helper\Context $context,
-		\Magento\Quote\Model\Quote\Address\Rate $shippingRate,
-		\Magento\Sales\Api\Data\OrderInterface $order,
-		\Magento\Checkout\Model\Session $_checkoutSession,
-		\Magento\Quote\Model\QuoteFactory $quote,
+        \Magento\Framework\App\Helper\Context $context,
+        \Magento\Quote\Model\Quote\Address\Rate $shippingRate,
+        \Magento\Sales\Api\Data\OrderInterface $order,
+        \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,
+        \Magento\Quote\Model\QuoteFactory $quote,
         \Magento\Framework\View\LayoutFactory $layoutFactory,
         ProductMetadataInterface $metaData,
         \Magento\Quote\Model\Quote\TotalsCollector $totalsCollector,
         ModuleListInterface $moduleList,
         \Billmate\BillmateCheckout\Helper\Config $configHelper
-	){
+    ){
         $this->orderInterface = $order;
         $this->shippingRate = $shippingRate;
-        $this->checkoutSession = $_checkoutSession;
+        $this->checkoutSessionFactory = $checkoutSessionFactory;
         $this->quote = $quote;
         $this->logger = $context->getLogger();
         $this->metaData = $metaData;
@@ -154,7 +158,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param $input
      */
-	public function setShippingAddress($shippingData)
+    public function setShippingAddress($shippingData)
     {
         $shippingData = $this->prepareShippingData($shippingData);
         $quote = $this->getQuote();
@@ -173,12 +177,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $quote->getShippingAddress()->addData($shippingAddress);
         $this->setSessionData('billmate_shipping_address',$shippingAddress);
-	}
+    }
 
     /**
      * @param $shippingData
      */
-	public function setBillingAddress($shippingData)
+    public function setBillingAddress($shippingData)
     {
         $shippingData = $this->prepareShippingData($shippingData);
         $billingAddress = [
@@ -200,17 +204,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $this->setSessionData('billmate_email', $shippingData['email']);
         }
 
-		if ($this->getSessionData('billmate_shipping_address')) {
-			$this->setShippingAddress($shippingData);
-		}
-	}
+        if ($this->getSessionData('billmate_shipping_address')) {
+            $this->setShippingAddress($shippingData);
+        }
+    }
 
     /**
      * @param $shippingData
      *
      * @return array
      */
-	protected function prepareShippingData($shippingData)
+    protected function prepareShippingData($shippingData)
     {
         $shippingData['firstname'] = $this->correctSymbols($shippingData['firstname']);
         $shippingData['lastname'] = $this->correctSymbols($shippingData['lastname']);
@@ -227,11 +231,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function setShippingMethod($methodInput)
     {
         $this->prepareCheckout();
-		$shippingAddress = $this->getQuote()->getShippingAddress();
+        $shippingAddress = $this->getQuote()->getShippingAddress();
         $shippingAddress->setShippingMethod($methodInput);
-		$shippingAddress->collectShippingRates();
+        $shippingAddress->collectShippingRates();
         $shippingAddress->save();
-		$this->getQuote()->collectTotals();
+        $this->getQuote()->collectTotals();
         $this->getQuote()->save();
         $this->setSessionData('shipping_code', $methodInput);
     }
@@ -241,22 +245,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function setDiscountCode($code)
     {
-	    $this->getQuote()
+        $this->getQuote()
             ->setCouponCode($code)
             ->collectTotals()
             ->save();
         $this->setSessionData('billmate_applied_discount_code', $code);
     }
 
-	public function clearSession()
+    public function clearSession()
     {
-		$this->checkoutSession->clearStorage();
-		$this->checkoutSession->clearQuote();
-		$this->clearBmSession();
-		session_unset();
-	}
+        $this->checkoutSession->clearStorage();
+        $this->checkoutSession->clearQuote();
+        $this->clearBmSession();
+        session_unset();
+        $this->checkoutSession = null;
+    }
 
-	public function clearBmSession()
+    public function clearBmSession()
     {
         $this->setSessionData('iframe_url', null);
         $this->setSessionData('shippingPrice', null);
@@ -274,11 +279,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param $methodCode int
      */
-	public function setBmPaymentMethod($methodCode)
+    public function setBmPaymentMethod($methodCode)
     {
         $method = 'billmate_checkout';
         $this->setSessionData('billmate_payment_method', $method);
-	}
+    }
 
     public function getPaymentMethod()
     {
@@ -325,7 +330,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getItems()
     {
-       return $this->getQuote()->getAllVisibleItems();
+        return $this->getQuote()->getAllVisibleItems();
     }
 
     /**
@@ -384,6 +389,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function setSessionData($key, $value)
     {
+        $this->addLog(['method' => __METHOD__, 'key' => $key, 'value' => $value]);
         return $this->_getCheckoutSession()->setData($key, $value);
     }
 
@@ -395,7 +401,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getSessionData($key)
     {
-        return $this->_getCheckoutSession()->getData($key);
+        $value = $this->_getCheckoutSession()->getData($key);
+        $this->addLog(['method' => __METHOD__, 'key' => $key, 'value' => $value]);
+        return $value;
     }
 
     /**
@@ -403,6 +411,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected function _getCheckoutSession()
     {
+        if (!$this->checkoutSession) {
+            $this->checkoutSession = $this->checkoutSessionFactory->create();
+        }
         return $this->checkoutSession;
     }
 
@@ -426,7 +437,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->getShippingAddress()
             ->getShippingMethod();
         if (!$activeMethod) {
-           return $this->configHelper->getDefaultShippingMethod();
+            return $this->configHelper->getDefaultShippingMethod();
         }
         return $activeMethod;
     }
@@ -449,6 +460,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         $logData = [
+            'pid' => getmypid(),
+            'uri' => $_SERVER['REQUEST_URI'],
             'date' => date('Y-m-d H:i:s'),
         ];
         $logData = $logData + $data;
